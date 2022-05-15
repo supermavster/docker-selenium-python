@@ -11,9 +11,13 @@ class Driver:
     driver = None
     browser = None
     path_driver = None
+    is_chrome = False
+    is_firefox = False
 
     def __init__(self, browser, path_driver, path_assets, extension_path=None):
         self.browser = browser
+        self.is_chrome = Complement.browser_is_chrome(browser)
+        self.is_firefox = Complement.browser_is_firefox(browser)
         self.path_driver = path_driver
         self.path_assets = path_assets
         self.configuration(extension_path)
@@ -48,16 +52,15 @@ class Driver:
 
         self.driver.maximize_window()
 
-
     def _install_extension(self, extension_path):
         profile = None
         options_browser = self._get_options()
         for extension in extension_path:
-            if Complement.browser_is_chrome(self.browser):
+            if self.is_chrome:
                 # options_browser
                 #   .add_argument(f'--load-extension = {extension}')
                 options_browser.add_extension(extension)
-            elif Complement.browser_is_firefox(self.browser):
+            elif self.is_firefox:
                 profile = webdriver.FirefoxProfile()
                 profile.add_extension(extension)
                 profile.accept_untrusted_certs = True
@@ -70,9 +73,9 @@ class Driver:
 
     def _get_service(self):
         service_browser = None
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             service_browser = ServiceChrome(self.path_driver)
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             log_path = f"{self.path_assets}/log"
             Complement.make_folder(log_path)
             service_browser = ServiceFirefox(executable_path=self.path_driver, log_path=f"{log_path}/firefox.log")
@@ -81,13 +84,13 @@ class Driver:
     def _get_options(self, environment):
         options_browser = self.set_service_option()
 
+        options_browser.add_argument("--no-sandbox")
+        options_browser.add_argument("--disable-dev-shm-usage")
+
         if environment == 'local':
             arg = "--disable-blink-features=AutomationControlled"
             options_browser.add_argument(arg)
-            # options_browser.add_argument("--headless")
             options_browser.add_argument("--start-maximized")
-            options_browser.add_argument("--no-sandbox")
-            options_browser.add_argument("--disable-dev-shm-usage")
             options_browser.add_argument("--disable-gpu")
             options_browser.add_argument("--no-first-run")
             options_browser.add_argument("--no-service-autorun")
@@ -101,24 +104,19 @@ class Driver:
             options_browser = self._set_special_options(options_browser)
         elif environment == 'docker':
             options_browser.add_argument("--headless")
-            options_browser.add_argument("--no-sandbox")
-            options_browser.add_argument("--disable-dev-shm-usage")
-            chrome_prefs = {}
-            options_browser.experimental_options["prefs"] = chrome_prefs
-            chrome_prefs["profile.default_content_settings"] = {"images": 2}
 
         return options_browser
 
     def set_service_option(self):
         options_browser = None
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             options_browser = webdriver.ChromeOptions()
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             options_browser = webdriver.FirefoxOptions()
         return options_browser
 
     def _set_special_options(self, options_browser):
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             import os
 
             options_browser.add_experimental_option(
@@ -137,7 +135,7 @@ class Driver:
             )
             auto = "useAutomationExtension"
             options_browser.add_experimental_option(auto, False)
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             import uuid
             import json
 
@@ -151,15 +149,15 @@ class Driver:
         return options_browser
 
     def _get_driver_object(self, service, options=None):
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             return webdriver.Chrome(service=service, options=options)
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             return webdriver.Firefox(service=service, options=options)
 
     def _get_driver_single(self, options):
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             return webdriver.Chrome(options=options)
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             return webdriver.Firefox(options=options)
 
     def _get_remote_driver_object(self, options=None):

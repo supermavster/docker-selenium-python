@@ -11,6 +11,8 @@ class WebDriver:
     driver = None
     path_assets = None
     path_driver = None
+    is_chrome = False
+    is_firefox = False
 
     driver_chrome = "chromedriver"
     driver_firefox = "geckodriver"
@@ -19,6 +21,8 @@ class WebDriver:
         self.path_assets = path_assets
         self.path_driver = f"{self.path_assets}/driver/"
         self.browser = browser
+        self.is_chrome = Complement.browser_is_chrome(browser)
+        self.is_firefox = Complement.browser_is_firefox(browser)
         self.init()
 
     def init(self):
@@ -29,9 +33,9 @@ class WebDriver:
 
     def set_path_driver(self):
         driver_name = None
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             driver_name = self.driver_chrome
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             driver_name = self.driver_firefox
 
         Complement.make_folder(self.path_driver)
@@ -43,9 +47,9 @@ class WebDriver:
 
     def download_driver(self):
         driver_data = None
-        if Complement.browser_is_chrome(self.browser):
+        if self.is_chrome:
             driver_data = self.download_chrome_driver()
-        elif Complement.browser_is_firefox(self.browser):
+        elif self.is_firefox:
             driver_data = self.download_firefox_driver()
 
         if driver_data is not None:
