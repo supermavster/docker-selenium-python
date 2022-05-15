@@ -9,7 +9,7 @@ class DownloadExtensionChrome(ExtensionManager):
     extension = "crx"
     path_file = "extensions/chrome"
     path_asset = None
-    web_driver = None
+    driver = None
 
     def __init__(self, path_asset):
         self.path_asset = path_asset
@@ -18,10 +18,11 @@ class DownloadExtensionChrome(ExtensionManager):
     def _get_user_agent_browser(self):
         user_agent_browser = UserAgentBrowser(self.path_asset)
         if not user_agent_browser.exist_user_agent():
-            if self.web_driver is None:
-                chrome_driver = WebDriver(self.path_asset, "chrome")
-                self.web_driver = chrome_driver.get_driver()
-            user_agent_browser.set_driver(self.web_driver)
+            if self.driver is None:
+                web_driver = WebDriver(self.path_asset, "chrome")
+                web_driver.config_driver_single()
+                self.driver = web_driver.get_driver()
+            user_agent_browser.set_driver(self.driver)
         user_agent = user_agent_browser.data_user_agent()
         return user_agent
 
@@ -103,7 +104,6 @@ class DownloadExtensionChrome(ExtensionManager):
         path_file = data["path_file"]
         self._download_extension(url, path_file)
         return data["path_file"]
-
 
 # # Test
 # def main():

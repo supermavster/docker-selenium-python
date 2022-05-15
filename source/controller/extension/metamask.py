@@ -2,7 +2,6 @@ from selenium.common.exceptions import TimeoutException as TE
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as WDW
 
-import helpers.complement as Complement
 from interface.plugin_manager import PluginManager
 
 
@@ -18,7 +17,7 @@ class MetaMask(PluginManager):
     data_extension_firefox = {
         "url": "https://addons.mozilla.org/en-US/firefox/addon/ether-metamask",
         "collection_url": "https://addons.mozilla.org/en-US/firefox/"
-        "addon/metamask-legacy-web3/",
+                          "addon/metamask-legacy-web3/",
         "user_id": [12436990, 13014139],
     }
 
@@ -35,13 +34,15 @@ class MetaMask(PluginManager):
     # Init Process
     def ask_passwords(self):
         question = "What is your MetaMask password?"
-        self.password = complement.save_file_question(
-            self.path_data, "password", question
-        )
+        self.password = ""
+        #     Complement.save_file_question(
+        #     self.path_data, "password", question
+        # )
         question = "What is your MetaMask recovery phrase?"
-        self.recovery_phrase = complement.save_file_question(
-            self.path_data, "recovery_phrase", question
-        )
+        self.recovery_phrase = ""
+        #     Complement.save_file_question(
+        #     self.path_data, "recovery_phrase", question
+        # )
 
     def start(self):
         self.ask_passwords()
@@ -106,20 +107,30 @@ class MetaMask(PluginManager):
         if len(self.webdriver.driver.window_handles) > 0:
             self.webdriver.window_handles(0)  # Switch back to the OpenSea tab.
 
-
 # # Test
 # def main():
+#     import os
+#     from controller.web_driver import WebDriver
+#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
+#
+#     # Get path asset
+#     path_asset = os.path.dirname(os.path.abspath(__file__))
+#     path_asset = path_asset.replace("controller/extension", "assets")
 #     # Install with Chrome/Firefox
-#     browser = 'Chrome' # 'Firefox'
+#     browser = 'chrome'  # 'Firefox'
 #     # browser = 'Firefox'# Chrome
-#     metamask = MetaMask(browser=browser)
+#
+#     metamask = MetaMask(path_asset, browser=browser)
 #     metamask.start()
 #     path_extension = metamask.get_path_extension()
-#     from helpers.web_driver import WebDriver
-#     firefox_driver = WebDriver(browser)
-#     driver = firefox_driver.get_driver([path_extension])
+#     web_driver = WebDriver(path_asset, browser)
+#     web_driver.config_driver([path_extension])
+#     driver = web_driver.get_driver()
 #     # Login
-#     metamask.set_web_driver(firefox_driver, driver)
+#     metamask.set_web_driver(web_driver, driver)
 #     # Open metamask extension in chrome
 #     metamask.login()
 #     driver.close()

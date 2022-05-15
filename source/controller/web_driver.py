@@ -28,8 +28,10 @@ class WebDriver:
     def init(self):
         self.set_path_driver()
         self.install_driver()
-        self.config_driver()
+        self.config_driver_single()
         self.config_user_agent()
+        extension_paths = self.download_extension()
+        self.config_driver(extension_paths)
 
     def set_path_driver(self):
         driver_name = None
@@ -61,13 +63,23 @@ class WebDriver:
     def download_firefox_driver(self):
         return GeckoDriverManager().install()
 
-    def config_driver(self, extension_path=None):
+    def config_driver_single(self):
         if Complement.check_file_exist(self.path_driver):
-            driver = Driver(self.browser, self.path_driver, self.path_assets, extension_path)
+            driver = Driver(self.browser, self.path_driver, self.path_assets)
+            driver.configure_single()
             self.driver = driver.get_driver()
         else:
             self.download_driver()
-            return self.config_driver(extension_path)
+            self.config_driver_single()
+
+    def config_driver(self, extension_paths=None):
+        if Complement.check_file_exist(self.path_driver):
+            driver = Driver(self.browser, self.path_driver, self.path_assets, extension_paths)
+            driver.configuration(extension_paths)
+            self.driver = driver.get_driver()
+        else:
+            self.download_driver()
+            self.config_driver(extension_paths)
 
     def get_driver(self):
         return self.driver
@@ -76,6 +88,15 @@ class WebDriver:
         user_agent_browser = UserAgentBrowser(self.path_assets)
         user_agent_browser.set_driver(self.driver)
         user_agent_browser.data_user_agent()
+
+    def download_extension(self):
+        extension_paths = None
+        # if self.is_chrome:
+        # extension_paths = self.download_chrome_extension()
+        # elif self.is_firefox:
+        # extension_paths = self.download_firefox_extension()
+
+        return extension_paths
 
 # # TEST
 # def main():

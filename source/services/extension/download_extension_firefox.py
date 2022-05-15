@@ -53,7 +53,6 @@ class DownloadExtensionFirefox(ExtensionManager):
         self._download_extension(url, path_file)
         return path_file
 
-
 # # Test
 # def main():
 #     import os

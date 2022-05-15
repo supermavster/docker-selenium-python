@@ -51,7 +51,7 @@ To run the script natively, we can use the next commands.
    ```
 7. Execute the script.
     ```shell
-    python app.py
+    python main.py
     ```
 8. Stop the workspace.
     ```shell
@@ -121,7 +121,7 @@ To run the script natively, we can use the next commands.
     Or execute the script in the container.
     ```shell
     docker exec -it $(docker ps | grep app | awk '{print $1}') bash
-    # python app.py
+    # python main.py
     ```
   
 5. Stop the Docker image.

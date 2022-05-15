@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
-import helpers.complement as complement
-from helpers.download_extension_chrome import DownloadExtensionChrome
-from helpers.download_extension_firefox import DownloadExtensionFirefox
+from helper.complement import Complement
 from interface.interface import Interface
+from services.extension.download_extension_chrome import DownloadExtensionChrome
+from services.extension.download_extension_firefox import DownloadExtensionFirefox
 
 
 class PluginManager(metaclass=Interface):
@@ -36,18 +36,18 @@ class PluginManager(metaclass=Interface):
 
     @abstractmethod
     def browser_is_chrome(self):
-        return complement.browser_is_chrome(self.browser)
+        return Complement.browser_is_chrome(self.browser)
 
     @abstractmethod
     def browser_is_firefox(self):
-        return complement.browser_is_firefox(self.browser)
+        return Complement.browser_is_firefox(self.browser)
 
     @abstractmethod
     def set_web_driver(self, webdriver, driver=None):
         if webdriver is not None:
             self.webdriver = webdriver
             if driver is None:
-                self.driver = self.webdriver.driver
+                self.driver = self.webdriver.get_driver()
             else:
                 self.driver = driver
             self.download_extension.set_driver(self.driver)

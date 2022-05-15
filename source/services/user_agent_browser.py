@@ -29,18 +29,20 @@ class UserAgentBrowser:
 # # TEST
 # def main(web_driver=None):
 #     import os
-#     from helper.web_driver import WebDriver
+#     from controller.web_driver import WebDriver
 #
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("helper", "assets")
+#     path_asset = path_asset.replace("services", "assets")
 #     user_agent_browser = UserAgentBrowser(path_asset)
+#     driver = None
 #     if not user_agent_browser.exist_user_agent():
-#         if web_driver is None:
-#             chrome_driver = WebDriver(path_asset, "chrome")
-#             web_driver = chrome_driver.get_driver()
-#         user_agent_browser.set_driver(web_driver)
-#     user_agent = user_agent_browser.get_data_user_agent()
+#         if driver is None:
+#             web_driver = WebDriver(path_asset, "chrome")
+#             web_driver.config_driver_single()
+#             driver = web_driver.get_driver()
+#         user_agent_browser.set_driver(driver)
+#     user_agent = user_agent_browser.data_user_agent()
 #     return user_agent
 #
 #

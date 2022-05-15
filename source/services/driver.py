@@ -14,6 +14,7 @@ from helper.complement import Complement
 
 
 class Driver:
+    environment = None
     driver = None
     browser = None
     path_driver = None
@@ -26,37 +27,44 @@ class Driver:
         self.is_firefox = Complement.browser_is_firefox(browser)
         self.path_driver = path_driver
         self.path_assets = path_assets
-        self.configuration(extension_path)
+        self.environment = os.environ.get('ENVIRONMENT') or 'local'
 
     def get_driver(self):
         return self.driver
 
     def configuration(self, extension_path=None):
-        environment = os.environ.get('ENVIRONMENT') or 'remote'
         service = self._get_service()
-        options = self._get_options(environment)
-        self.setting_driver(environment, service, options, extension_path)
+        options = self._get_options()
+        self.setting_driver(service, options, extension_path)
         # self.set_setting_window()
 
-    def setting_driver(self, environment, service, options, extension_path=None):
+    def configure_single(self):
+        service = self._get_service()
+        options = self._get_options()
+        self._set_driver(options, service)
+
+    def setting_driver(self, service, options, extension_path=None):
         profile = None
         if extension_path:
             options, profile = self._install_extension(extension_path)
 
-        if environment == 'local':
-            self.driver = self._get_driver_object(service, options)
-        elif environment == 'remote':
-            self.driver = self._get_remote_driver_object(options)
-        elif environment == 'docker':
-            self.driver = self._get_driver_single(options)
+        self._set_driver(options, service)
 
         # Exception Firefox (Addon)
-        if extension_path and Complement.browser_is_firefox(self.browser):
+        if extension_path and self.is_firefox:
             self.driver.profile = profile
             for extension in extension_path:
                 self.driver.install_addon(extension)
 
         self.driver.maximize_window()
+
+    def _set_driver(self, options, service):
+        if self.environment == 'local':
+            self.driver = self._get_driver_object(service, options)
+        elif self.environment == 'remote':
+            self.driver = self._get_remote_driver_object(options)
+        elif self.environment == 'docker':
+            self.driver = self._get_driver_single(options)
 
     def _install_extension(self, extension_path):
         profile = None
@@ -87,13 +95,13 @@ class Driver:
             service_browser = ServiceFirefox(executable_path=self.path_driver, log_path=f"{log_path}/firefox.log")
         return service_browser
 
-    def _get_options(self, environment):
+    def _get_options(self):
         options_browser = self.set_service_option()
 
         options_browser.add_argument("--no-sandbox")
         options_browser.add_argument("--disable-dev-shm-usage")
 
-        if environment == 'local':
+        if self.environment == 'local':
             arg = "--disable-blink-features=AutomationControlled"
             options_browser.add_argument(arg)
             options_browser.add_argument("--start-maximized")
@@ -108,7 +116,7 @@ class Driver:
             options_browser.add_argument("--log-level=3")
             options_browser.add_argument("--lang=en-US")
             options_browser = self._set_special_options(options_browser)
-        elif environment == 'docker':
+        elif self.environment == 'docker':
             options_browser.add_argument("--headless")
 
         return options_browser
@@ -284,7 +292,6 @@ class Driver:
             return False
         except Exception as e:  # Some buttons need to be visible to be clickable,
             print("error", e)
-
 
 # # TEST
 # def main():
