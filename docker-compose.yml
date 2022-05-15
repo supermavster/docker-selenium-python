@@ -45,8 +45,11 @@ services:
     build:
       context: .
       dockerfile: ./docker/python/Dockerfile
+    env_file:
+      - .env
     ports:
       - "4000:4000"
     volumes:
+      - .env:/usr/src/app/.env
       - ./source:/usr/src/app
     privileged: true
