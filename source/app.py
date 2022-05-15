@@ -22,8 +22,21 @@
 
 import os
 
-from source.controller import Runner
+from controller.runner import Runner
 
 if __name__ == "__main__":
     root_path = os.path.dirname(os.path.abspath(__file__))
     Runner(root_path)
+
+# from pyvirtualdisplay import Display
+# from selenium import webdriver
+#
+# display = Display(visible=0, size=(800, 600))
+# display.start()
+#
+# browser = webdriver.Chrome()
+# browser.get('https://www.google.com/')
+# print(browser.title)
+#
+# browser.quit()
+# display.stop()

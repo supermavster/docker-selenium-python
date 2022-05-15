@@ -5,6 +5,10 @@ ENV LC_ALL C.UTF-8
 ENV PYTHONUNBUFFERED=1
 
 ENV APP_HOME /usr/src/app
+
+# Copy environment file
+COPY .env $APP_HOME/
+
 WORKDIR /$APP_HOME
 
 COPY ./source/ $APP_HOME/
@@ -14,11 +18,16 @@ RUN mkdir __logger
 # install google chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+
 RUN apt-get -y update
-RUN apt-get install -y google-chrome-stable
+
+#RUN apt-get install --no-install-recommends -y fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+#    libnspr4 libnss3 lsb-release xdg-utils libxss1 libdbus-glib-1-2 libgbm1 \
+#    curl unzip \
+#    xvfb
 
 # install chromedriver
-RUN apt-get install -yqq unzip
+#RUN apt-get install -y google-chrome-stable
 RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 RUN chmod +x /usr/local/bin/chromedriver
