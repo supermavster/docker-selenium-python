@@ -26,7 +26,7 @@ class Driver:
         return self.driver
 
     def configuration(self, extension_path=None):
-        environment = os.environ.get('ENVIRONMENT') or 'docker'
+        environment = os.environ.get('ENVIRONMENT') or 'remote'
         service = self._get_service()
         options = self._get_options(environment)
         self.setting_driver(environment, service, options, extension_path)
@@ -161,7 +161,7 @@ class Driver:
             return webdriver.Firefox(options=options)
 
     def _get_remote_driver_object(self, options=None):
-        remote_url = os.getenv("REMOTE_URL") or "http://localhost:4444/wd/hub"
+        remote_url = os.getenv("REMOTE_URL") or "http://selenium-hub:4444/wd/hub"
         return webdriver.Remote(
             command_executor=remote_url,
             options=options
