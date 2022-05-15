@@ -1,25 +1,28 @@
 import re
 
-from helpers.user_agent_browser import UserAgentBrowser
-from helpers.web_driver import WebDriver
+from controller.web_driver import WebDriver
 from interface.extension_manager import ExtensionManager
+from services.user_agent_browser import UserAgentBrowser
 
 
 class DownloadExtensionChrome(ExtensionManager):
     extension = "crx"
     path_file = "extensions/chrome"
+    path_asset = None
+    web_driver = None
 
-    def __init__(self, path_assets):
-        self.path_file = f"{path_assets}/{self.path_file}"
+    def __init__(self, path_asset):
+        self.path_asset = path_asset
+        self.path_file = f"{path_asset}/{self.path_file}"
 
     def _get_user_agent_browser(self):
-        user_agent_browser = UserAgentBrowser()
+        user_agent_browser = UserAgentBrowser(self.path_asset)
         if not user_agent_browser.exist_user_agent():
-            if self.driver is None:
-                chrome_driver = WebDriver()
-                self.driver = chrome_driver.get_single_driver()
-            user_agent_browser.set_driver(self.driver)
-        user_agent = user_agent_browser.get_data_user_agent()
+            if self.web_driver is None:
+                chrome_driver = WebDriver(self.path_asset, "chrome")
+                self.web_driver = chrome_driver.get_driver()
+            user_agent_browser.set_driver(self.web_driver)
+        user_agent = user_agent_browser.data_user_agent()
         return user_agent
 
     def _get_version(self, user_agent):
@@ -42,13 +45,13 @@ class DownloadExtensionChrome(ExtensionManager):
                         }
         # Make Again version
         version = (
-            response["major"]
-            + "."
-            + response["minor"]
-            + "."
-            + response["build"]
-            + "."
-            + response["patch"]
+                response["major"]
+                + "."
+                + response["minor"]
+                + "."
+                + response["build"]
+                + "."
+                + response["patch"]
         )
         # Return version
         return version
@@ -104,7 +107,16 @@ class DownloadExtensionChrome(ExtensionManager):
 
 # # Test
 # def main():
-#     download_extension_chrome = DownloadExtensionChrome()
+#     import os
+#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
+#
+#     # Get path asset
+#     path_asset = os.path.dirname(os.path.abspath(__file__))
+#     path_asset = path_asset.replace("services/extension", "assets")
+#     download_extension_chrome = DownloadExtensionChrome(path_asset)
 #
 #     url_extensions = [
 #         "https://chrome.google.com/webstore/detail/"

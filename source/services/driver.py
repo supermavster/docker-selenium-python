@@ -1,8 +1,14 @@
 import os
+from datetime import datetime as dt
 
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException as TE
 from selenium.webdriver.chrome.service import Service as ServiceChrome
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.service import Service as ServiceFirefox
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait as WDW
 
 from helper.complement import Complement
 
@@ -194,15 +200,16 @@ class Driver:
             return WDW(self.driver, 15).until(
                 EC.visibility_of_element_located((By.XPATH, element))
             )
-        except Exception as e:
+        except Exception as e:  # Some buttons need to be visible to be clickable,
             print("error", e)
-            return False
+        return False
 
     def send_keys(self, element: str, keys: str) -> None:
         """Send keys to an element if it's visible using Selenium."""
         try:
             self.visible(element).send_keys(keys)
-        except Exception:  # Some elements are not visible but are present.
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
             WDW(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, element))
             ).send_keys(keys)
@@ -248,14 +255,16 @@ class Driver:
         try:
             # Try to close the webdriver.
             self.driver.quit()
-        except Exception:
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
             pass
 
     def is_exists_by_xpath(self, xpath):
         try:
             # WDW(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
-            self.driver.find_element_by_xpath(xpath)
-        except Exception as ex:
+            self.driver.find_element(By.XPATH, xpath)
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
             return False
         return True
 
@@ -273,14 +282,19 @@ class Driver:
         except TE:
             print("Timeout while waiting for the upload page.")
             return False
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
+
 
 # # TEST
 # def main():
 #     import os
-#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("helper", "assets")
+#     path_asset = path_asset.replace("services", "assets")
 #     path_driver = f"{path_asset}/driver/"
 #     browser = "chrome"
 #

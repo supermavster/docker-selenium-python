@@ -1,2 +1,0 @@
-from .download_extension_chrome import DownloadExtensionChrome
-from .download_extension_firefox import DownloadExtensionFirefox

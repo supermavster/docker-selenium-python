@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 import requests
 
-import helpers.complement as complement
+from helper.complement import Complement
 from interface.interface import Interface
 
 
@@ -34,6 +34,7 @@ class ExtensionManager(metaclass=Interface):
     def _get_path_extension(self, url_chrome_extension, info_extension=None):
         if info_extension is None:
             info_extension = self._get_info(url_chrome_extension)
+        Complement.make_folder(self.path_file)
         path_file = "{path_file}/{file_name}".format(
             path_file=self.path_file, file_name=info_extension["file_name"]
         )
@@ -49,12 +50,13 @@ class ExtensionManager(metaclass=Interface):
         path_extension = self.set_extension_path(url_base_extension)
         return {
             "path_file": path_extension,
-            "exist": complement.exist_file(path_extension),
+            "exist": Complement.check_file_exist(path_extension),
         }
 
     @abstractmethod
     def _download_extension(self, url, path_file):
         print(url)
+        print(path_file)
         request_uri = requests.get(url)
         content = request_uri.content
-        complement.write_file(content, path_file, "wb")
+        Complement.write_file(path_file, content, "wb")

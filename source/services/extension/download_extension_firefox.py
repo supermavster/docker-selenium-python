@@ -56,7 +56,16 @@ class DownloadExtensionFirefox(ExtensionManager):
 
 # # Test
 # def main():
-#     download_extension = DownloadExtensionFirefox()
+#     import os
+#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
+#
+#     # Get path asset
+#     path_asset = os.path.dirname(os.path.abspath(__file__))
+#     path_asset = path_asset.replace("services/extension", "assets")
+#     download_extension = DownloadExtensionFirefox(path_asset)
 #
 #     url_extensions = [
 #         {

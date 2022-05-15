@@ -25,8 +25,8 @@ class Complement:
         shutil.move(src, dest)
 
     @staticmethod
-    def write_file(path, content):
-        with open(path, "w") as f:
+    def write_file(path, content, mode="w"):
+        with open(path, mode) as f:
             f.write(content)
 
     @staticmethod

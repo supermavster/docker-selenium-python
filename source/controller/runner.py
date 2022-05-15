@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from controller.web_driver import WebDriver
+from .web_driver import WebDriver
 
 
 class Runner:

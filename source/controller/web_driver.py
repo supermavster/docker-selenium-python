@@ -2,8 +2,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from helper.complement import Complement
-from helper.driver import Driver
-from helper.user_agent_browser import UserAgentBrowser
+from services.driver import Driver
+from services.user_agent_browser import UserAgentBrowser
 
 
 class WebDriver:
