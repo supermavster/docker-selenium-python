@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from helper.web_driver import WebDriver
+from .web_driver import WebDriver
 
 
 class Runner:
@@ -18,6 +18,7 @@ class Runner:
 
     def run(self):
         self.configuration()
+        self.configure_browser()
         self.test()
 
     def configuration(self):
@@ -25,7 +26,6 @@ class Runner:
         self.path_asset = os.getenv('PATH_ASSETS') or 'assets/'
         self.path_asset = self.root_path + '/' + self.path_asset
         self.browser = os.getenv('BROWSER') or 'chrome'
-        self.configure_browser()
 
     def configure_browser(self):
         self.webdriver = WebDriver(self.path_asset, self.browser)

@@ -17,4 +17,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 CMD tail -f /dev/null
-# CMD python3 example.py
+# CMD python3 main.py
