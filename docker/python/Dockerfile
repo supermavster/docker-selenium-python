@@ -1,8 +1,13 @@
 FROM python:3.8
 
-COPY ./source/ /app
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+ENV APP_HOME /usr/src/app
+WORKDIR /$APP_HOME
+
+COPY ./source/ $APP_HOME/
 
 RUN mkdir __logger
 
@@ -62,8 +67,8 @@ RUN rm /tmp/chromedriver.zip
 ENV DISPLAY=:99
 
 RUN pip install --upgrade pip
-RUN ls -lhar
 
 RUN pip install -r requirements.txt
 
-#CMD ["python", "/app/app.py"]
+CMD tail -f /dev/null
+# CMD python3 example.py

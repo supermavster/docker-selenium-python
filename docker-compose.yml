@@ -45,8 +45,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/python/Dockerfile
+    ports:
+      - "4000:4000"
     volumes:
-      - ./source:/app
-    depends_on:
-      - selenium-hub
+      - ./source:/usr/src/app
     privileged: true
