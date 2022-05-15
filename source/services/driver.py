@@ -176,6 +176,104 @@ class Driver:
         if size > 1:
             self.driver.close()
 
+    def clickable(self, element: str) -> None:
+        """Click on an element if it's clickable using Selenium."""
+        try:
+            WDW(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, element))
+            ).click()
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
+            self.driver.execute_script(  # so JavaScript can bypass this.
+                "arguments[0].click();", self.visible(element)
+            )
+
+    def visible(self, element: str):
+        """Check if an element is visible using Selenium."""
+        try:
+            return WDW(self.driver, 15).until(
+                EC.visibility_of_element_located((By.XPATH, element))
+            )
+        except Exception as e:
+            print("error", e)
+            return False
+
+    def send_keys(self, element: str, keys: str) -> None:
+        """Send keys to an element if it's visible using Selenium."""
+        try:
+            self.visible(element).send_keys(keys)
+        except Exception:  # Some elements are not visible but are present.
+            WDW(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, element))
+            ).send_keys(keys)
+
+    def send_date(self, element: str, keys: str) -> None:
+        """Send a date (DD-MM-YYYY HH:MM) to a date input by clicking on it."""
+        keys = keys.split("-") if "-" in keys else [keys]
+        keys = [keys[1], keys[0], keys[2]] if len(keys) > 1 else keys
+        # Compare years
+        if keys[len(keys) - 1] == str(dt.now().year):
+            size_data = 1
+        else:
+            size_data = len(keys)
+        for part in range(len(keys) - size_data):
+            self.clickable(element)  # Click first on the element.
+            self.send_keys(element, keys[part])  # Then send it the date.
+
+    def clear_text(self, element) -> None:
+        """Clear text from an input."""
+        self.clickable(element)  # Click on the element then clear its text.
+        # Note: change with 'darwin' if it's not working on MacOS.
+        control = Keys.COMMAND if os.name == "posix" else Keys.CONTROL
+        webdriver.ActionChains(self.driver).key_down(control).perform()
+        webdriver.ActionChains(self.driver).send_keys("a").perform()
+        webdriver.ActionChains(self.driver).key_up(control).perform()
+
+    def window_handles(self, window_number: int) -> None:
+        """Check for window handles and wait until a specific tab is opened."""
+        WDW(self.driver, 15).until(
+            lambda _: len(self.driver.window_handles) > window_number
+        )
+        # Switch to the asked tab.
+        self.driver.switch_to.window(self.driver.window_handles[window_number])
+
+    def is_empty(self, element: str, data: str, value: str = "") -> bool:
+        """Check if data is empty and input its value."""
+        if data != value:  # Check if the data is not an empty string
+            self.send_keys(element, data)  # or a default value, and send it.
+            return False
+        return True
+
+    def close_window(self) -> None:
+        try:
+            # Try to close the webdriver.
+            self.driver.quit()
+        except Exception:
+            pass
+
+    def is_exists_by_xpath(self, xpath):
+        try:
+            # WDW(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
+            self.driver.find_element_by_xpath(xpath)
+        except Exception as ex:
+            return False
+        return True
+
+    def switch_to_main_window(self):
+        # Switch to the main tab.
+        self.window_handles(0)
+
+    def switch_to_popup_window(self):
+        # Switch to the MetaMask pop up tab.
+        self.window_handles(1)
+
+    def check_diff_current_vs_url(self, url):
+        try:
+            return WDW(self.driver, 5).until(lambda _: self.driver.current_url != url)
+        except TE:
+            print("Timeout while waiting for the upload page.")
+            return False
+
 # # TEST
 # def main():
 #     import os
