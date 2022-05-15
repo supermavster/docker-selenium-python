@@ -1,3 +1,14 @@
+### VisualStudioCode template
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -85,6 +96,27 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
+### Vim template
+# Swap
+[._]*.s[a-v][a-z]
+!*.svg  # comment out if you don't need vector files
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+Sessionx.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~
+
 ### macOS template
 # General
 .DS_Store
@@ -116,7 +148,6 @@ Temporary Items
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
-**/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -254,6 +285,3 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-!/assets/
-!/source/assets/
-!/source/.env
