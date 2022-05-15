@@ -11,7 +11,6 @@ WORKDIR /$APP_HOME
 COPY ./source/ $APP_HOME/
 COPY .env $APP_HOME/.env
 
-
 RUN apt-get -y update
 
 RUN pip install --upgrade pip
