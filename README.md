@@ -1,5 +1,7 @@
 # Docker + Docker-compose + Selenium + Python
 
+![Docker + Selenium + Python](https://miro.medium.com/max/1000/1*ilLIBRM6dzbVr3YfueJKsA.png)
+
 This is a simple example of how to use Docker, Docker-compose and Selenium together to run a simple Python script.
 
 In this case, we can use three different ways to run the script:
