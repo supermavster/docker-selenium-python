@@ -22,7 +22,7 @@ class Runner:
 
     def configuration(self):
         load_dotenv()
-        self.path_asset = os.getenv('PATH_ASSETS') or 'assets'
+        self.path_asset = os.getenv('PATH_ASSETS') or 'assets/'
         self.path_asset = self.root_path + '/' + self.path_asset
         self.browser = os.getenv('BROWSER') or 'chrome'
         self.configure_browser()
