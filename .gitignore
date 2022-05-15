@@ -255,3 +255,4 @@ dmypy.json
 cython_debug/
 
 !/assets/
+!/source/assets/
