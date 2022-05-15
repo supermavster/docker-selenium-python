@@ -18,6 +18,7 @@ class Runner:
 
     def run(self):
         self.configuration()
+        self.test()
 
     def configuration(self):
         load_dotenv()
@@ -29,3 +30,10 @@ class Runner:
     def configure_browser(self):
         self.webdriver = WebDriver(self.path_asset, self.browser)
         self.driver = self.webdriver.get_driver()
+
+    def test(self):
+        print('Test')
+        print(self.driver.title)
+        self.driver.get("https://google.com")
+        print(self.driver.title)
+        self.driver.quit()

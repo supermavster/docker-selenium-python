@@ -29,14 +29,9 @@ if __name__ == "__main__":
     Runner(root_path)
 
 # from pyvirtualdisplay import Display
-# from selenium import webdriver
 #
 # display = Display(visible=0, size=(800, 600))
 # display.start()
 #
-# browser = webdriver.Chrome()
-# browser.get('https://www.google.com/')
-# print(browser.title)
 #
-# browser.quit()
 # display.stop()
