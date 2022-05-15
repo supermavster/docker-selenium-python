@@ -29,6 +29,7 @@ class Runner:
 
     def configure_browser(self):
         self.webdriver = WebDriver(self.path_asset, self.browser)
+        self.webdriver.config_driver_single()
         self.driver = self.webdriver.get_driver()
 
     def test(self):
