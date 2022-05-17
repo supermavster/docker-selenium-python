@@ -14,7 +14,7 @@ class PluginManager(metaclass=Interface):
     # Firefox
     data_extension_firefox = {}
 
-    def __init__(self, path_assets, webdriver=None, browser="Chrome"):
+    def __init__(self, path_assets, webdriver=None, browser="chrome"):
         self.driver = None
         self.download_extension = None
         self.browser = browser

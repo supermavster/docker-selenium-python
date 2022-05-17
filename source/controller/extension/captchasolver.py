@@ -28,8 +28,13 @@ class CaptchaSolver(PluginManager):
                           "firefox/addon/youtube-video-quality",
     }
 
-    def __init__(self, path_asset, webdriver=None, browser="Chrome"):
-        super().__init__(path_asset, webdriver, browser)
+    def __init__(self, path_assets, webdriver=None, browser="Chrome"):
+        self.download_extension = None
+        self.path_assets = path_assets
+        self.webdriver = webdriver
+        self.browser = browser
+        self.path_data = f"{self.path_assets}/{self.path_data}"
+        super().__init__(path_assets, webdriver, browser)
 
     def _check_exist_captcha(self):
         return self.driver.visible("//iframe[contains(@src,'recaptcha')]")
@@ -180,34 +185,34 @@ class CaptchaSolver(PluginManager):
         if self._check_webdriver():
             self.resolve_captcha()
 
-
-# Test
-def main():
-    import os
-
-    # Env
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    # Get path asset
-    path_asset = os.path.dirname(os.path.abspath(__file__))
-    path_asset = path_asset.replace("controller/extension", "assets")
-    # Install with Chrome/Firefox
-    browser = 'chrome'  # 'Firefox'
-    # browser = 'firefox'  # Chrome
-    captcha_solver = CaptchaSolver(path_asset, browser=browser)
-    captcha_solver.start()
-    path_extension = captcha_solver.get_path_extension()
-    from controller.web_driver import WebDriver
-    web_driver = WebDriver(path_asset, browser)
-    web_driver.config_driver([path_extension])
-    driver = web_driver.get_driver()
-    captcha_solver.set_web_driver(web_driver, driver)
-    # Test Solvent
-    captcha_solver.set_test_url(web_driver)
-    captcha_solver.resolve()
-    driver.close()
-
-
-if __name__ == '__main__':
-    main()
+# # Test
+# def main():
+#     import os
+#     from controller.web_driver import WebDriver
+#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
+#
+#     # Get path asset
+#     path_asset = os.path.dirname(os.path.abspath(__file__))
+#     path_asset = path_asset.replace("controller/extension", "assets")
+#     # Install with Chrome/Firefox
+#     browser = 'chrome'  # 'Firefox'
+#     # browser = 'firefox'# Chrome
+#
+#     captcha_solver = CaptchaSolver(path_asset, browser=browser)
+#     captcha_solver.start()
+#     path_extension = captcha_solver.get_path_extension()
+#     web_driver = WebDriver(path_asset, browser)
+#     web_driver.config_driver([path_extension])
+#     driver = web_driver.get_driver()
+#     captcha_solver.set_web_driver(web_driver, driver)
+#     # Test Solvent
+#     captcha_solver.set_test_url(web_driver)
+#     captcha_solver.resolve()
+#     driver.close()
+#
+#
+# if __name__ == '__main__':
+#     main()
