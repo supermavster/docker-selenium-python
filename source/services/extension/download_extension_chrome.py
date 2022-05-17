@@ -13,7 +13,7 @@ class DownloadExtensionChrome(ExtensionManager):
 
     def __init__(self, path_asset):
         self.path_asset = path_asset
-        self.path_file = f"{path_asset}/{self.path_file}"
+        self.path_file = f"{path_asset}{self.path_file}"
 
     def _get_user_agent_browser(self):
         user_agent_browser = UserAgentBrowser(self.path_asset)
@@ -115,7 +115,7 @@ class DownloadExtensionChrome(ExtensionManager):
 #
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("services/extension", "assets")
+#     path_asset = path_asset.replace("services/extension", "assets/")
 #     download_extension_chrome = DownloadExtensionChrome(path_asset)
 #
 #     url_extensions = [
