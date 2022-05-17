@@ -193,7 +193,7 @@ class CaptchaSolver(PluginManager):
 #
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("controller/extension", "assets")
+#     path_asset = path_asset.replace("controller/extension", "assets/")
 #     # Install with Chrome/Firefox
 #     browser = 'chrome'  # 'Firefox'
 #     # browser = 'Firefox'# Chrome
