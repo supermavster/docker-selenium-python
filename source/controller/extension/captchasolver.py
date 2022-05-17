@@ -182,35 +182,35 @@ class CaptchaSolver(PluginManager):
             self.resolve_captcha()
 
 
-# Test
-def main():
-    import os
-    from controller.web_driver import WebDriver
-
-    # Env
-    from dotenv import load_dotenv
-    load_dotenv()
-
-    # Get path asset
-    path_asset = os.path.dirname(os.path.abspath(__file__))
-    path_asset = path_asset.replace("controller/extension", "assets")
-    # Install with Chrome/Firefox
-    browser = 'chrome'  # 'Firefox'
-    # browser = 'Firefox'# Chrome
-
-    captcha_solver = CaptchaSolver(path_asset, browser=browser)
-    captcha_solver.start()
-    path_extension = captcha_solver.get_path_extension()
-    web_driver = WebDriver(path_asset, browser, True)
-    web_driver.config_driver([path_extension])
-    driver_manager = web_driver.get_driver_manager()
-    driver = web_driver.get_driver()
-    captcha_solver.set_driver(driver_manager, driver)
-    # Test Solvent
-    captcha_solver.set_test_url()
-    captcha_solver.resolve()
-    driver.close()
-
-
-if __name__ == '__main__':
-    main()
+# # Test
+# def main():
+#     import os
+#     from controller.web_driver import WebDriver
+#
+#     # Env
+#     from dotenv import load_dotenv
+#     load_dotenv()
+#
+#     # Get path asset
+#     path_asset = os.path.dirname(os.path.abspath(__file__))
+#     path_asset = path_asset.replace("controller/extension", "assets")
+#     # Install with Chrome/Firefox
+#     browser = 'chrome'  # 'Firefox'
+#     # browser = 'Firefox'# Chrome
+#
+#     captcha_solver = CaptchaSolver(path_asset, browser=browser)
+#     captcha_solver.start()
+#     path_extension = captcha_solver.get_path_extension()
+#     web_driver = WebDriver(path_asset, browser, True)
+#     web_driver.config_driver([path_extension])
+#     driver_manager = web_driver.get_driver_manager()
+#     driver = web_driver.get_driver()
+#     captcha_solver.set_driver(driver_manager, driver)
+#     # Test Solvent
+#     captcha_solver.set_test_url()
+#     captcha_solver.resolve()
+#     driver.close()
+#
+#
+# if __name__ == '__main__':
+#     main()

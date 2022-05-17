@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.service import Service as ServiceFirefox
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait as WDW
 
 from helper.complement import Complement
@@ -159,6 +160,7 @@ class DriverManager:
             json_info = json.dumps({addon_id: addon_dyn_id})
             preference = "extensions.webextensions.uuids"
             options_browser.set_preference(preference, json_info)
+            options_browser.add_argument('--disable-popup-blocking')
 
         return options_browser
 
@@ -189,75 +191,6 @@ class DriverManager:
         # Close other tabs if exist (Install extension)
         if size > 1:
             self.driver.close()
-
-    def clickable(self, element: str) -> None:
-        """Click on an element if it's clickable using Selenium."""
-        try:
-            WDW(self.driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, element))
-            ).click()
-        except Exception as e:  # Some buttons need to be visible to be clickable,
-            print("error", e)
-            self.driver.execute_script(  # so JavaScript can bypass this.
-                "arguments[0].click();", self.visible(element)
-            )
-
-    def visible(self, element: str):
-        """Check if an element is visible using Selenium."""
-        try:
-            return WDW(self.driver, 15).until(
-                EC.visibility_of_element_located((By.XPATH, element))
-            )
-        except Exception as e:  # Some buttons need to be visible to be clickable,
-            print("error", e)
-        return False
-
-    def send_keys(self, element: str, keys: str) -> None:
-        """Send keys to an element if it's visible using Selenium."""
-        try:
-            self.visible(element).send_keys(keys)
-        except Exception as e:  # Some buttons need to be visible to be clickable,
-            print("error", e)
-            WDW(self.driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, element))
-            ).send_keys(keys)
-
-    def send_date(self, element: str, keys: str) -> None:
-        """Send a date (DD-MM-YYYY HH:MM) to a date input by clicking on it."""
-        keys = keys.split("-") if "-" in keys else [keys]
-        keys = [keys[1], keys[0], keys[2]] if len(keys) > 1 else keys
-        # Compare years
-        if keys[len(keys) - 1] == str(dt.now().year):
-            size_data = 1
-        else:
-            size_data = len(keys)
-        for part in range(len(keys) - size_data):
-            self.clickable(element)  # Click first on the element.
-            self.send_keys(element, keys[part])  # Then send it the date.
-
-    def clear_text(self, element) -> None:
-        """Clear text from an input."""
-        self.clickable(element)  # Click on the element then clear its text.
-        # Note: change with 'darwin' if it's not working on MacOS.
-        control = Keys.COMMAND if os.name == "posix" else Keys.CONTROL
-        webdriver.ActionChains(self.driver).key_down(control).perform()
-        webdriver.ActionChains(self.driver).send_keys("a").perform()
-        webdriver.ActionChains(self.driver).key_up(control).perform()
-
-    def window_handles(self, window_number: int) -> None:
-        """Check for window handles and wait until a specific tab is opened."""
-        WDW(self.driver, 15).until(
-            lambda _: len(self.driver.window_handles) > window_number
-        )
-        # Switch to the asked tab.
-        self.driver.switch_to.window(self.driver.window_handles[window_number])
-
-    def is_empty(self, element: str, data: str, value: str = "") -> bool:
-        """Check if data is empty and input its value."""
-        if data != value:  # Check if the data is not an empty string
-            self.send_keys(element, data)  # or a default value, and send it.
-            return False
-        return True
 
     def close_window(self) -> None:
         try:
@@ -292,6 +225,91 @@ class DriverManager:
             return False
         except Exception as e:  # Some buttons need to be visible to be clickable,
             print("error", e)
+
+    def quit(self) -> None:
+        """Stop the webdriver."""
+        try:  # Try to close the webdriver.
+            self.driver.quit()
+        except (Exception,):  # The webdriver is closed
+            pass  # or no webdriver is started.
+
+    def clickable(self, element: str) -> None:
+        """Click on an element if it's clickable using Selenium."""
+        try:
+            WDW(self.driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, element))
+            ).click()
+        except Exception as e:  # Some buttons need to be visible to be clickable,
+            print("error", e)
+            self.driver.execute_script(  # so JavaScript can bypass this.
+                "arguments[0].click();", self.visible(element)
+            )
+
+    def visible(self, element: str):
+        """Check if an element is visible using Selenium."""
+        try:
+            return WDW(self.driver, 15).until(
+                EC.visibility_of_element_located((By.XPATH, element))
+            )
+        except (Exception,):  # Some buttons need to be visible to be clickable,
+            return False
+
+    def send_keys(self, element: str, keys: str) -> None:
+        """Send keys to an element if it's visible using Selenium."""
+        try:
+            self.visible(element).send_keys(keys)
+        except (Exception,):  # Some elements are not visible but are present.
+            WDW(self.driver, 5).until(EC.presence_of_element_located(
+                (By.XPATH, element))).send_keys(keys)
+
+    def send_date(self, element: str, keys: str) -> None:
+        """Send a date (DD-MM-YYYY HH:MM) to a date input by clicking on it."""
+        # if is_firefox:  # GeckoDriver (Mozilla Firefox).
+        #     self.send_keys(element, '-'.join(
+        #         reversed(keys.split('-'))) if '-' in keys else keys)
+        #     return  # Quit the method.
+        keys = keys.split('-') if '-' in keys else [keys]
+        keys = [keys[1], keys[0], keys[2]] if len(keys) > 1 else keys
+        for part in range(len(keys) - 1 if keys[len(keys) - 1] == str(
+                dt.now().year) else len(keys)):  # Number of clicks.
+            self.clickable(element)  # Click first on the element.
+            self.send_keys(element, keys[part])  # Then send it the date.
+
+    def clear_text(self, element) -> None:
+        """Clear text from an input."""
+        self.clickable(element)  # Click on the element then clear its text.
+        # Note: change with 'darwin' if it's not working on MacOS.
+        control = Keys.COMMAND if os.name == "posix" else Keys.CONTROL
+        # ChromeDriver (Google Chrome).
+        webdriver.ActionChains(self.driver).key_down(control).send_keys(
+            'a').key_up(control).perform()
+        # GeckoDriver (Mozilla Firefox). self.send_keys(element, (control, 'a'))
+
+    def is_empty(self, element: str, data: str, value: str = '') -> bool:
+        """Check if data is empty and input its value."""
+        if data != value:  # Check if the data is not an empty string
+            self.send_keys(element, data)  # or a default value, and send it.
+            return False
+        return True
+
+    def window_handles(self, window_number: int) -> None:
+        """Check for window handles and wait until a specific tab is opened."""
+        WDW(self.driver, 15).until(
+            lambda _: len(self.driver.window_handles) > window_number
+        )
+        # Switch to the asked tab.
+        self.driver.switch_to.window(self.driver.window_handles[window_number])
+
+    def select_by_value(self, xpath: str, value: str) -> None:
+        """Select an option by its value."""
+        try:
+            # Selenium <select> element.
+            select = Select(self.visible(xpath))
+            # Select the option by its value.
+            select.select_by_value(value)
+        except Exception as ex:
+            print(ex)
+
 
 # # TEST
 # def main():
