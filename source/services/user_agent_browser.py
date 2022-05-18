@@ -4,8 +4,8 @@ from helper.complement import Complement
 class UserAgentBrowser:
     path_file = None
 
-    def __init__(self, path_asset):
-        self.path_file = f"{path_asset}/user_agent.txt"
+    def __init__(self, path_asset, browser):
+        self.path_file = f"{path_asset}/user_agent_{browser}.txt"
         self.driver = None
 
     def set_driver(self, driver):
@@ -30,11 +30,11 @@ class UserAgentBrowser:
 # def main(web_driver=None):
 #     import os
 #     from controller.web_driver import WebDriver
-#
+#     browser = "chrome"
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
 #     path_asset = path_asset.replace("services", "assets")
-#     user_agent_browser = UserAgentBrowser(path_asset)
+#     user_agent_browser = UserAgentBrowser(path_asset, browser)
 #     driver = None
 #     if not user_agent_browser.exist_user_agent():
 #         if driver is None:

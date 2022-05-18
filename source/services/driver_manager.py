@@ -24,10 +24,10 @@ class DriverManager:
 
     def __init__(self, browser, path_driver, path_assets, extension_path=None):
         self.browser = browser
+        self.path_assets = path_assets
+        self.path_driver = path_driver
         self.is_chrome = Complement.browser_is_chrome(browser)
         self.is_firefox = Complement.browser_is_firefox(browser)
-        self.path_driver = path_driver
-        self.path_assets = path_assets
         self.environment = os.environ.get('ENVIRONMENT') or 'local'
 
     def get_driver(self):
@@ -37,7 +37,6 @@ class DriverManager:
         service = self._get_service()
         options = self._get_options()
         self.setting_driver(service, options, extension_path)
-        # self.set_setting_window()
 
     def configure_single(self):
         service = self._get_service()
@@ -193,29 +192,32 @@ class DriverManager:
             self.driver.close()
 
     def close_window(self) -> None:
+        """Try to close the webdriver."""
         try:
-            # Try to close the webdriver.
             self.driver.quit()
-        except Exception as e:  # Some buttons need to be visible to be clickable,
+        except Exception as e:
             print("error", e)
-            pass
 
     def is_exists_by_xpath(self, xpath):
         try:
             # WDW(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
             self.driver.find_element(By.XPATH, xpath)
-        except Exception as e:  # Some buttons need to be visible to be clickable,
+        except Exception as e:
             print("error", e)
             return False
         return True
 
     def switch_to_main_window(self):
-        # Switch to the main tab.
+        """Switch to the main tab."""
         self.window_handles(0)
 
     def switch_to_popup_window(self):
-        # Switch to the MetaMask pop up tab.
+        """Switch to the MetaMask pop up tab."""
         self.window_handles(1)
+
+    def switch_to_window(self, index: int):
+        """Switch to the MetaMask pop up tab."""
+        self.window_handles(index)
 
     def check_diff_current_vs_url(self, url):
         try:
@@ -223,15 +225,16 @@ class DriverManager:
         except TE:
             print("Timeout while waiting for the upload page.")
             return False
-        except Exception as e:  # Some buttons need to be visible to be clickable,
+        except Exception as e:
             print("error", e)
+            return False
 
     def quit(self) -> None:
         """Stop the webdriver."""
-        try:  # Try to close the webdriver.
+        try:
             self.driver.quit()
-        except (Exception,):  # The webdriver is closed
-            pass  # or no webdriver is started.
+        except Exception as e:
+            print("error", e)
 
     def clickable(self, element: str) -> None:
         """Click on an element if it's clickable using Selenium."""
@@ -239,11 +242,10 @@ class DriverManager:
             WDW(self.driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, element))
             ).click()
-        except Exception as e:  # Some buttons need to be visible to be clickable,
+        except Exception as e:
             print("error", e)
-            self.driver.execute_script(  # so JavaScript can bypass this.
-                "arguments[0].click();", self.visible(element)
-            )
+            # JavaScript can bypass this.
+            self.driver.execute_script("arguments[0].click();", self.visible(element))
 
     def visible(self, element: str):
         """Check if an element is visible using Selenium."""
@@ -251,29 +253,33 @@ class DriverManager:
             return WDW(self.driver, 15).until(
                 EC.visibility_of_element_located((By.XPATH, element))
             )
-        except (Exception,):  # Some buttons need to be visible to be clickable,
+        except Exception as e:
+            print("error", e)
             return False
 
     def send_keys(self, element: str, keys: str) -> None:
         """Send keys to an element if it's visible using Selenium."""
         try:
             self.visible(element).send_keys(keys)
-        except (Exception,):  # Some elements are not visible but are present.
-            WDW(self.driver, 5).until(EC.presence_of_element_located(
-                (By.XPATH, element))).send_keys(keys)
+        except Exception as e:
+            print("error", e)
+            WDW(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, element))
+            ).send_keys(keys)
 
     def send_date(self, element: str, keys: str) -> None:
         """Send a date (DD-MM-YYYY HH:MM) to a date input by clicking on it."""
-        # if is_firefox:  # GeckoDriver (Mozilla Firefox).
-        #     self.send_keys(element, '-'.join(
-        #         reversed(keys.split('-'))) if '-' in keys else keys)
-        #     return  # Quit the method.
-        keys = keys.split('-') if '-' in keys else [keys]
-        keys = [keys[1], keys[0], keys[2]] if len(keys) > 1 else keys
-        for part in range(len(keys) - 1 if keys[len(keys) - 1] == str(
-                dt.now().year) else len(keys)):  # Number of clicks.
-            self.clickable(element)  # Click first on the element.
-            self.send_keys(element, keys[part])  # Then send it the date.
+        # GeckoDriver (Mozilla Firefox).
+        if self.is_firefox:
+            self.send_keys(element, '-'.join(reversed(keys.split('-'))) if '-' in keys else keys)
+        # ChromeDriver (Google Chrome).
+        if self.is_chrome:
+            keys = keys.split('-') if '-' in keys else [keys]
+            keys = [keys[1], keys[0], keys[2]] if len(keys) > 1 else keys
+            for part in range(len(keys) - 1 if keys[len(keys) - 1] == str(
+                    dt.now().year) else len(keys)):  # Number of clicks.
+                self.clickable(element)  # Click first on the element.
+                self.send_keys(element, keys[part])  # Then send it the date.
 
     def clear_text(self, element) -> None:
         """Clear text from an input."""
@@ -281,9 +287,11 @@ class DriverManager:
         # Note: change with 'darwin' if it's not working on MacOS.
         control = Keys.COMMAND if os.name == "posix" else Keys.CONTROL
         # ChromeDriver (Google Chrome).
-        webdriver.ActionChains(self.driver).key_down(control).send_keys(
-            'a').key_up(control).perform()
-        # GeckoDriver (Mozilla Firefox). self.send_keys(element, (control, 'a'))
+        if self.is_chrome:
+            webdriver.ActionChains(self.driver).key_down(control).send_keys('a').key_up(control).perform()
+        # GeckoDriver (Mozilla Firefox).
+        if self.is_firefox:
+            self.send_keys(element, (control, 'a'))
 
     def is_empty(self, element: str, data: str, value: str = '') -> bool:
         """Check if data is empty and input its value."""
@@ -291,6 +299,22 @@ class DriverManager:
             self.send_keys(element, data)  # or a default value, and send it.
             return False
         return True
+
+    def wait_new_tab(self, windows):
+        """Wait for the new tab."""
+        WDW(self.driver, 10).until(
+            lambda _: windows != self.driver.window_handles)
+
+    def wait_popup_close(self):
+        try:
+            """Wait until the popup is closed."""
+            WDW(self.driver, 10).until(EC.number_of_windows_to_be(2))
+            return True
+        except TE:
+            return False
+        except Exception as e:
+            print("error", e)
+            return False
 
     def window_handles(self, window_number: int) -> None:
         """Check for window handles and wait until a specific tab is opened."""

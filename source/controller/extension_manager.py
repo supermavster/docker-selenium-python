@@ -23,7 +23,8 @@ class ExtensionManager:
         self.extensions = []
 
         extensions = os.getenv('EXTENSIONS_CHROME')
-        extensions = extensions.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
+        extensions = extensions.replace('[', '').replace(']', '').replace('"', '')\
+            .replace(', ', ',').replace(' ,', ',').split(',')
 
         if 'metamask' in extensions:
             self.set_wallet()

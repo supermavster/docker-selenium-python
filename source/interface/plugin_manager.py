@@ -30,7 +30,7 @@ class PluginManager(metaclass=Interface):
     @abstractmethod
     def set_browser(self):
         if self.browser_is_chrome():
-            self.download_extension = DownloadExtensionChrome(self.path_assets)
+            self.download_extension = DownloadExtensionChrome(self.path_assets, self.browser)
         elif self.browser_is_firefox():
             self.download_extension = DownloadExtensionFirefox(self.path_assets)
 

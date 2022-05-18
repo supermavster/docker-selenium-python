@@ -1,7 +1,3 @@
-from selenium.common.exceptions import TimeoutException as TE
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait as WDW
-
 from interface.plugin_manager import PluginManager
 
 
@@ -22,7 +18,7 @@ class MetaMask(PluginManager):
     }
 
     def __init__(self, path_assets, driver_manager=None, driver=None, browser="chrome"):
-        self.fails = 0  # Counter of fails during wallet connection.
+        self.fails = 0
         self.private_key = None
         self.password = None
         self.recovery_phrase = None
@@ -120,8 +116,7 @@ class MetaMask(PluginManager):
             self.driver_manager.window_handles(2)  # Switch to the MetaMask pop up tab.
             self.driver_manager.clickable('//*[contains(@class, "btn-primary")]')
         if contract:
-            WDW(self.driver_manager.driver, 10).until(  # Wait for the new MetaMask tab.
-                lambda _: windows != self.driver_manager.driver.window_handles)
+            self.driver_manager.wait_new_tab(windows)
             self.contract()  # Sign the contract.
 
     def contract(self, new_contract: bool = False) -> None:
@@ -135,11 +130,11 @@ class MetaMask(PluginManager):
         # Click on the "Sign" button - Make a contract link.
         self.driver_manager.clickable('(//div[contains(@class, "signature") and contains(@class, "footer")])'
                                       '[position()=1]/button[2]')
-        try:  # Wait until the MetaMask pop up is closed.
-            WDW(self.driver_manager.driver, 10).until(EC.number_of_windows_to_be(2))
-        except TE:
-            self.contract()  # Sign the contract a second time.
-        self.driver_manager.window_handles(1)  # Switch back to the OpenSea tab.
+        if not self.driver_manager.wait_popup_close():
+            # Sign the contract a second time.
+            self.contract()
+        # Switch back to the OpenSea tab.
+        self.driver_manager.window_handles(1)
 
     def close(self) -> None:
         """Close the MetaMask popup."""
@@ -152,7 +147,7 @@ class MetaMask(PluginManager):
                 pass  # Ignore the exception.
 
 
-# # Test
+## Test
 # def main():
 #     import os
 #     from controller.web_driver import WebDriver
@@ -166,13 +161,14 @@ class MetaMask(PluginManager):
 #     path_asset = path_asset.replace("controller/extension", "assets/")
 #     # Install with Chrome/Firefox
 #     browser = 'chrome'  # 'Firefox'
-#     # browser = 'Firefox'# Chrome
+#     # browser = 'firefox'# Chrome
 #
 #     metamask = MetaMask(path_asset, browser=browser)
 #     metamask.start()
 #     path_extension = metamask.get_path_extension()
 #     web_driver = WebDriver(path_asset, browser, True)
 #     web_driver.config_driver([path_extension])
+#     web_driver.start()
 #     driver_manager = web_driver.get_driver_manager()
 #     driver = web_driver.get_driver()
 #     metamask.set_driver(driver_manager, driver)
