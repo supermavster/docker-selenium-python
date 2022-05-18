@@ -147,7 +147,7 @@ class MetaMask(PluginManager):
                 pass  # Ignore the exception.
 
 
-## Test
+# ## Test
 # def main():
 #     import os
 #     from controller.web_driver import WebDriver

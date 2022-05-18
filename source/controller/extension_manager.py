@@ -22,8 +22,8 @@ class ExtensionManager:
     def set_extensions(self):
         self.extensions = []
 
-        extensions = os.getenv('EXTENSIONS_CHROME')
-        extensions = extensions.replace('[', '').replace(']', '').replace('"', '')\
+        extensions = os.getenv('EXTENSIONS_' + (self.browser).upper())
+        extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
             .replace(', ', ',').replace(' ,', ',').split(',')
 
         if 'metamask' in extensions:

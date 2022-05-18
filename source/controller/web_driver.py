@@ -19,6 +19,7 @@ class WebDriver:
     driver = None
     driver_manager = None
     user_agent_browser = None
+    extension_manager = None
 
     driver_chrome = "chromedriver"
     driver_firefox = "geckodriver"
@@ -30,7 +31,7 @@ class WebDriver:
         self.path_driver = f"{self.path_assets}/driver/"
         self.is_chrome = Complement.browser_is_chrome(browser)
         self.is_firefox = Complement.browser_is_firefox(browser)
-        self.is_configured = Complement.check_file_exist(f"{self.path_assets}/config")
+        self.is_configured = Complement.check_file_exist(f"{self.path_assets}/config_{self.browser}")
         self.init()
 
     def init(self):
@@ -46,7 +47,7 @@ class WebDriver:
         self.install_driver()
         self.init_single_driver()
         self.install_user_agent()
-        Complement.write_file(f"{self.path_assets}/config", "True")
+        Complement.write_file(f"{self.path_assets}/config_{self.browser}", "True")
         self.driver.quit()
 
     def set_path_driver(self):
@@ -119,12 +120,21 @@ class WebDriver:
 
     def download_extension(self, debug=False):
         extension_paths = []
-        extension_manager = ExtensionManager(self.driver_manager, self.driver, self.path_assets, self.browser)
-        extension_paths = extension_manager.get_extensions()
+        self.extension_manager = ExtensionManager(self.driver_manager, self.driver, self.path_assets, self.browser)
+        extension_paths = self.extension_manager.get_extensions()
         return extension_paths
 
     def start(self):
+        import os
         self.driver_manager.set_setting_window()
+        # self.extension_manager = ExtensionManager(self.driver_manager, self.driver, self.path_assets, self.browser)
+        keys = os.getenv('METAMASK_AUTH')
+        keys = keys.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
+        self.extension_manager.wallet.set_passwords(keys[0], keys[1])
+        self.extension_manager.wallet.set_driver(self.driver_manager, self.driver)
+        self.extension_manager.wallet.login()
+        self.driver_manager.close_window()
+
 
 # # TEST
 # def main():

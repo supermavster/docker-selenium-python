@@ -10,9 +10,28 @@ from selenium.webdriver.firefox.service import Service as ServiceFirefox
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait as WDW
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.firefox.firefox_profile import AddonFormatError
 
 from helper.complement import Complement
 
+class FirefoxProfileWithWebExtensionSupport(webdriver.FirefoxProfile):
+    def _addon_details(self, addon_path):
+        try:
+            return super()._addon_details(addon_path)
+        except AddonFormatError:
+            try:
+                with open(os.path.join(addon_path, 'manifest.json'), 'r') as f:
+                    manifest = json.load(f)
+                    print(manifest)
+                    return {
+                        'id': manifest['applications']['gecko']['id'],
+                        'version': manifest['version'],
+                        'name': manifest['name'],
+                        'unpack': True,
+                    }
+            except (IOError, KeyError) as e:
+                raise AddonFormatError(str(e), sys.exc_info()[2])
 
 class DriverManager:
     environment = None
@@ -48,23 +67,30 @@ class DriverManager:
         if extension_path:
             options, profile = self._install_extension(extension_path)
 
-        self._set_driver(options, service)
+        self._set_driver(options, service, profile)
 
         # Exception Firefox (Addon)
         if extension_path and self.is_firefox:
-            self.driver.profile = profile
+            # self.driver.profile = profile
+            # if self.environment != 'remote':
             for extension in extension_path:
+                print(extension)
                 self.driver.install_addon(extension)
 
         self.driver.maximize_window()
 
-    def _set_driver(self, options, service):
+    def _set_driver(self, options, service, profile=None):
         if self.environment == 'local':
             self.driver = self._get_driver_object(service, options)
         elif self.environment == 'remote':
-            self.driver = self._get_remote_driver_object(options)
+            self.driver = self._get_remote_driver_object(options, profile)
         elif self.environment == 'docker':
             self.driver = self._get_driver_single(options)
+
+    def get_adblock_profile(config):
+        ffprofile = FirefoxProfileWithWebExtensionSupport()
+        ffprofile.add_extension(adblockfile)
+        return ffprofile
 
     def _install_extension(self, extension_path):
         profile = None
@@ -75,8 +101,12 @@ class DriverManager:
                 #   .add_argument(f'--load-extension = {extension}')
                 options_browser.add_extension(extension)
             elif self.is_firefox:
-                profile = webdriver.FirefoxProfile()
+                if self.environment == 'remote':
+                    profile = FirefoxProfileWithWebExtensionSupport()
+                else:
+                    profile = webdriver.FirefoxProfile()
                 profile.add_extension(extension)
+                profile.set_preference("plugin.state.flash", 2)
                 profile.accept_untrusted_certs = True
                 profile.assume_untrusted_cert_issuer = True
                 policy = "security.fileuri.strict_origin_policy"
@@ -116,7 +146,7 @@ class DriverManager:
             options_browser.add_argument("--log-level=3")
             options_browser.add_argument("--lang=en-US")
             options_browser = self._set_special_options(options_browser)
-        elif self.environment == 'docker':
+        elif self.environment == 'docker' or self.environment == 'remote':
             options_browser.add_argument("--headless")
 
         return options_browser
@@ -175,15 +205,17 @@ class DriverManager:
         elif self.is_firefox:
             return webdriver.Firefox(options=options)
 
-    def _get_remote_driver_object(self, options=None):
+    def _get_remote_driver_object(self, options, profile):
         remote_url = os.getenv("REMOTE_URL") or "http://selenium-hub:4444/wd/hub"
         return webdriver.Remote(
             command_executor=remote_url,
-            options=options
+            options=options,
+            browser_profile=profile
         )
 
     def set_setting_window(self):
-        self.driver.get("https://google.com")
+        # self.driver.get("https://google.com")
+        self.driver.get("about:addons")
         # How many tabs
         handles = self.driver.window_handles
         size = len(handles)
