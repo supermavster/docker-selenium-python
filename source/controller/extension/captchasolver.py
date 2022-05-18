@@ -181,7 +181,6 @@ class CaptchaSolver(PluginManager):
         if self._check_webdriver():
             self.resolve_captcha()
 
-
 # # Test
 # def main():
 #     import os

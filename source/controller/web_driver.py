@@ -25,9 +25,9 @@ class WebDriver:
 
     def __init__(self, path_assets, browser, debug=False):
         self.is_debug = debug
+        self.browser = browser
         self.path_assets = path_assets
         self.path_driver = f"{self.path_assets}/driver/"
-        self.browser = browser
         self.is_chrome = Complement.browser_is_chrome(browser)
         self.is_firefox = Complement.browser_is_firefox(browser)
         self.is_configured = Complement.check_file_exist(f"{self.path_assets}/config")
@@ -48,7 +48,6 @@ class WebDriver:
         self.install_user_agent()
         Complement.write_file(f"{self.path_assets}/config", "True")
         self.driver.quit()
-
 
     def set_path_driver(self):
         driver_name = None
@@ -77,7 +76,7 @@ class WebDriver:
 
     def _get_user_agent(self):
         if self.user_agent_browser is None:
-            self.user_agent_browser = UserAgentBrowser(self.path_assets)
+            self.user_agent_browser = UserAgentBrowser(self.path_assets, self.browser)
         return self.user_agent_browser
 
     def download_driver(self):
@@ -123,6 +122,9 @@ class WebDriver:
         extension_manager = ExtensionManager(self.driver_manager, self.driver, self.path_assets, self.browser)
         extension_paths = extension_manager.get_extensions()
         return extension_paths
+
+    def start(self):
+        self.driver_manager.set_setting_window()
 
 # # TEST
 # def main():

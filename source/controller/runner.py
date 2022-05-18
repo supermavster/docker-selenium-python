@@ -32,6 +32,4 @@ class Runner:
         self.driver = self.webdriver.get_driver()
 
     def test(self):
-        self.driver.get("https://google.com")
-        print(self.driver.title)
-        self.driver.quit()
+        self.webdriver.start()

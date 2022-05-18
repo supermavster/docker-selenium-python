@@ -9,18 +9,19 @@ class DownloadExtensionChrome(ExtensionManager):
     extension = "crx"
     path_file = "extensions/chrome"
     path_asset = None
+    browser = None
     driver = None
 
-    def __init__(self, path_asset):
+    def __init__(self, path_asset, browser = "chrome"):
         self.path_asset = path_asset
+        self.browser = browser
         self.path_file = f"{path_asset}{self.path_file}"
 
     def _get_user_agent_browser(self):
-        user_agent_browser = UserAgentBrowser(self.path_asset)
+        user_agent_browser = UserAgentBrowser(self.path_asset, self.browser)
         if not user_agent_browser.exist_user_agent():
             if self.driver is None:
-                web_driver = WebDriver(self.path_asset, "chrome")
-                web_driver.config_driver_single()
+                web_driver = WebDriver(self.path_asset, self.browser)
                 self.driver = web_driver.get_driver()
             user_agent_browser.set_driver(self.driver)
         user_agent = user_agent_browser.data_user_agent()
