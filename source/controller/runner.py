@@ -30,6 +30,7 @@ class Runner:
         self.path_asset = os.getenv('PATH_ASSETS') or 'assets'
         self.path_asset = self.root_path + '/' + self.path_asset
         self.environment = os.getenv('ENVIRONMENT') or 'local'
+        print(self.environment)
         self.browser = os.getenv('BROWSER') or 'chrome'
 
     def configure_browser(self):

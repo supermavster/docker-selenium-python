@@ -8,23 +8,17 @@ from services.user_agent_browser import UserAgentBrowser
 class DownloadExtensionChrome(ExtensionManager):
     extension = "crx"
     path_file = "extensions/chrome"
-    path_asset = None
+    path_assets = None
     browser = 'chrome'
     driver = None
 
-    def __init__(self, path_asset):
-        self.path_asset = path_asset
-        self.path_file = f"{path_asset}{self.path_file}"
+    def __init__(self, path_assets):
+        self.path_assets = path_assets
+        self.path_file = f"{path_assets}/{self.path_file}"
 
     def _get_user_agent_browser(self):
-        user_agent_browser = UserAgentBrowser(self.path_asset, self.browser)
-        if not user_agent_browser.exist_user_agent():
-            if self.driver is None:
-                web_driver = WebDriver(self.path_asset, self.browser)
-                self.driver = web_driver.get_driver()
-            user_agent_browser.set_driver(self.driver)
-        user_agent = user_agent_browser.data_user_agent()
-        return user_agent
+        user_agent_browser = UserAgentBrowser(self.path_assets, self.browser, self.driver)
+        return user_agent_browser.data_user_agent()
 
     def _get_version(self, user_agent):
         response = {"major": "", "minor": "", "build": "", "patch": ""}

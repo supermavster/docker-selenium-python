@@ -8,7 +8,9 @@ ENV APP_HOME /usr/src/app
 WORKDIR /$APP_HOME
 
 COPY ./source/ $APP_HOME/
-COPY .env $APP_HOME/.env
+COPY .env $APP_HOME/
+RUN [ -f /$APP_HOME/.env ] || cp .env /$APP_HOME/
+ENV $(cat .env | xargs)
 
 # install google chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -

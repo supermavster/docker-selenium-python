@@ -18,14 +18,31 @@ class DriverManager:
     is_firefox = False
     configuration_driver = None
 
-    def __init__(self, path_driver, path_assets, browser, environment):
-        self.path_driver = path_driver
+    driver_chrome = "chromedriver"
+    driver_firefox = "geckodriver"
+
+    def __init__(self, path_assets, browser, environment):
         self.path_assets = path_assets
         self.browser = browser
         self.environment = environment
-        self.is_chrome = Complement.browser_is_chrome(browser)
-        self.is_firefox = Complement.browser_is_firefox(browser)
+        self.init()
+
+    def init(self):
+        self.is_chrome = Complement.browser_is_chrome(self.browser)
+        self.is_firefox = Complement.browser_is_firefox(self.browser)
+        self.path_driver = f"{self.path_assets}/driver/"
+        self._set_path_driver()
         self.configure_driver()
+
+    def _set_path_driver(self):
+        driver_name = None
+        if self.is_chrome:
+            driver_name = self.driver_chrome
+        elif self.is_firefox:
+            driver_name = self.driver_firefox
+
+        Complement.make_folder(self.path_driver)
+        self.path_driver = self.path_driver + driver_name
 
     def setup_driver(self):
         if not Complement.check_file_exist(self.path_driver) and self.environment == 'local':
@@ -50,7 +67,7 @@ class DriverManager:
     def configure_driver(self):
         config_single = None
         if self.is_chrome:
-            config_single = ConfigurationChrome(self.path_driver, self.environment)
+            config_single = ConfigurationChrome(self.path_driver, self.path_assets, self.environment)
         elif self.is_firefox:
             config_single = ConfigurationFirefox(self.path_driver, self.path_assets, self.environment)
 

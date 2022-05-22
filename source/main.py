@@ -1,8 +1,7 @@
 import os
 
-from controller.runner import Runner
-
 # from pyvirtualdisplay import Display
+from controller.runner import Runner
 
 if __name__ == "__main__":
     # display = Display(visible=0, size=(800, 600))

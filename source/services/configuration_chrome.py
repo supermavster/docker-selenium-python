@@ -6,15 +6,61 @@ from selenium import webdriver
 class ConfigurationChrome:
     driver = None
     path_driver = None
+    path_assets = None
     environment = 'local'
 
-    def __init__(self, path_driver, environment):
+    def __init__(self, path_driver, path_assets, environment):
         self.path_driver = path_driver
+        self.path_assets = path_assets
         self.environment = environment
 
     def set_driver(self):
         options_browser = self._get_options()
         self.driver = self._get_manager_driver(options_browser)
+
+    def set_driver_extension(self, path_extensions):
+        options_browser = self._get_options()
+        options_browser = self._set_extension_pre_config(options_browser, path_extensions)
+        self.driver = self._get_manager_driver(options_browser)
+
+    def _get_extension_pre_config(self, options_browser):
+        options_browser.accept_untrusted_certs = True
+        options_browser.accept_insecure_certs = True
+        # options_browser.add_argument('--disable-popup-blocking')
+
+        return options_browser
+
+    def _set_extension_pre_config(self, options_browser, path_extensions):
+        options_browser = self._get_extension_pre_config(options_browser)
+        for path_extension in path_extensions:
+            options_browser = self._set_manager_extension_pre_config(options_browser, path_extension)
+        return options_browser
+
+    def _set_manager_extension_pre_config(self, options_browser, path_extension):
+        match self.environment:
+            case 'local':
+                return self._set_extension_pre_local(options_browser, path_extension)
+            case 'docker':
+                return self._set_extension_pre_docker(options_browser, path_extension)
+            case 'remote':
+                return self._set_extension_pre_remote(options_browser, path_extension)
+            case default:
+                return options_browser
+
+    def _set_extension_pre_local(self, options_browser, path_extension):
+        #   options_browser.add_argument(f'--load-extension = {extension}')
+        options_browser.add_extension(path_extension)
+        return options_browser
+
+    def _set_extension_pre_docker(self, options_browser, path_extension):
+        #   options_browser.add_argument(f'--load-extension = {extension}')
+        options_browser.add_extension(path_extension)
+        return options_browser
+
+    def _set_extension_pre_remote(self, options_browser, path_extension):
+        #   options_browser.add_argument(f'--load-extension = {extension}')
+        options_browser.add_extension(path_extension)
+        return options_browser
 
     def get_driver(self):
         return self.driver
@@ -106,6 +152,3 @@ class ConfigurationChrome:
 
     def _get_options_remote(self, options_browser):
         return options_browser
-
-    def get_single_drive(self):
-        return None
