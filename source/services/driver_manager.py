@@ -15,24 +15,6 @@ from selenium.webdriver.firefox.firefox_profile import AddonFormatError
 
 from helper.complement import Complement
 
-class FirefoxProfileWithWebExtensionSupport(webdriver.FirefoxProfile):
-    def _addon_details(self, addon_path):
-        try:
-            return super()._addon_details(addon_path)
-        except AddonFormatError:
-            try:
-                with open(os.path.join(addon_path, 'manifest.json'), 'r') as f:
-                    manifest = json.load(f)
-                    print(manifest)
-                    return {
-                        'id': manifest['applications']['gecko']['id'],
-                        'version': manifest['version'],
-                        'name': manifest['name'],
-                        'unpack': True,
-                    }
-            except (IOError, KeyError) as e:
-                raise AddonFormatError(str(e), sys.exc_info()[2])
-
 class DriverManager:
     environment = None
     driver = None
@@ -75,7 +57,7 @@ class DriverManager:
             # if self.environment != 'remote':
             for extension in extension_path:
                 print(extension)
-                self.driver.install_addon(extension)
+                # self.driver.install_addon(extension)
 
         self.driver.maximize_window()
 
@@ -87,11 +69,6 @@ class DriverManager:
         elif self.environment == 'docker':
             self.driver = self._get_driver_single(options)
 
-    def get_adblock_profile(config):
-        ffprofile = FirefoxProfileWithWebExtensionSupport()
-        ffprofile.add_extension(adblockfile)
-        return ffprofile
-
     def _install_extension(self, extension_path):
         profile = None
         options_browser = self._get_options()
@@ -101,10 +78,7 @@ class DriverManager:
                 #   .add_argument(f'--load-extension = {extension}')
                 options_browser.add_extension(extension)
             elif self.is_firefox:
-                if self.environment == 'remote':
-                    profile = FirefoxProfileWithWebExtensionSupport()
-                else:
-                    profile = webdriver.FirefoxProfile()
+                profile = webdriver.FirefoxProfile()
                 profile.add_extension(extension)
                 profile.set_preference("plugin.state.flash", 2)
                 profile.accept_untrusted_certs = True
@@ -128,8 +102,8 @@ class DriverManager:
     def _get_options(self):
         options_browser = self.set_service_option()
 
-        options_browser.add_argument("--no-sandbox")
-        options_browser.add_argument("--disable-dev-shm-usage")
+        # options_browser.add_argument("--no-sandbox")
+        # options_browser.add_argument("--disable-dev-shm-usage")
 
         if self.environment == 'local':
             arg = "--disable-blink-features=AutomationControlled"
@@ -146,8 +120,9 @@ class DriverManager:
             options_browser.add_argument("--log-level=3")
             options_browser.add_argument("--lang=en-US")
             options_browser = self._set_special_options(options_browser)
-        elif self.environment == 'docker' or self.environment == 'remote':
-            options_browser.add_argument("--headless")
+        # elif self.environment == 'docker' or self.environment == 'remote':
+            # options_browser.add_argument("--headless")
+        options_browser = self._set_special_options(options_browser)
 
         return options_browser
 

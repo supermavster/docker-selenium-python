@@ -147,38 +147,38 @@ class MetaMask(PluginManager):
                 pass  # Ignore the exception.
 
 
-# ## Test
-# def main():
-#     import os
-#     from controller.web_driver import WebDriver
-#
-#     # Env
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("controller/extension", "assets/")
-#     # Install with Chrome/Firefox
-#     browser = 'chrome'  # 'Firefox'
-#     # browser = 'firefox'# Chrome
-#
-#     metamask = MetaMask(path_asset, browser=browser)
-#     metamask.start()
-#     path_extension = metamask.get_path_extension()
-#     web_driver = WebDriver(path_asset, browser, True)
-#     web_driver.config_driver([path_extension])
-#     web_driver.start()
-#     driver_manager = web_driver.get_driver_manager()
-#     driver = web_driver.get_driver()
-#     metamask.set_driver(driver_manager, driver)
-#     # Open metamask extension in chrome
-#     keys = os.getenv('METAMASK_AUTH')
-#     keys = keys.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
-#     metamask.set_passwords(keys[0], keys[1])
-#     metamask.login()
-#     driver.close()
-#
-#
-# if __name__ == '__main__':
-#     main()
+## Test
+def main():
+    import os
+    from controller.web_driver import WebDriver
+
+    # Env
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    # Get path asset
+    path_asset = os.path.dirname(os.path.abspath(__file__))
+    path_asset = path_asset.replace("controller/extension", "assets/")
+    # Install with Chrome/Firefox
+    # browser = 'chrome'  # 'Firefox'
+    browser = 'firefox'# Chrome
+
+    metamask = MetaMask(path_asset, browser=browser)
+    metamask.start()
+    path_extension = metamask.get_path_extension()
+    web_driver = WebDriver(path_asset, browser, True)
+    web_driver.config_driver([path_extension])
+    web_driver.start()
+    driver_manager = web_driver.get_driver_manager()
+    driver = web_driver.get_driver()
+    metamask.set_driver(driver_manager, driver)
+    # Open metamask extension in chrome
+    keys = os.getenv('METAMASK_AUTH')
+    keys = keys.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
+    metamask.set_passwords(keys[0], keys[1])
+    metamask.login()
+    driver.close()
+
+
+if __name__ == '__main__':
+    main()

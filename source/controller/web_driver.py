@@ -44,7 +44,7 @@ class WebDriver:
             self.config_driver(extension_paths)
 
     def configure_driver(self):
-        self.install_driver()
+        # self.install_driver()
         self.init_single_driver()
         self.install_user_agent()
         Complement.write_file(f"{self.path_assets}/config_{self.browser}", "True")
@@ -97,14 +97,14 @@ class WebDriver:
         return GeckoDriverManager().install()
 
     def config_driver(self, extension_paths=None):
-        if Complement.check_file_exist(self.path_driver):
+        # if Complement.check_file_exist(self.path_driver):
             driver_manager = DriverManager(self.browser, self.path_driver, self.path_assets, extension_paths)
             driver_manager.configuration(extension_paths)
             self.driver_manager = driver_manager
             self.driver = driver_manager.get_driver()
-        else:
-            self.download_driver()
-            self.config_driver(extension_paths)
+        # else:
+        #     self.download_driver()
+        #     self.config_driver(extension_paths)
 
     def get_driver_manager(self):
         return self.driver_manager
