@@ -147,8 +147,8 @@ class ConfigurationChrome:
         return options_browser
 
     def _get_options_docker(self, options_browser):
-        options_browser.add_argument("--no-sandbox")
-        options_browser.add_argument("--disable-dev-shm-usage")
+        # options_browser.add_argument("--no-sandbox")
+        # options_browser.add_argument("--disable-dev-shm-usage")
         options_browser.add_argument("--headless")
         return options_browser
 
