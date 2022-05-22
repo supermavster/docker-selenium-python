@@ -9,12 +9,11 @@ class DownloadExtensionChrome(ExtensionManager):
     extension = "crx"
     path_file = "extensions/chrome"
     path_asset = None
-    browser = None
+    browser = 'chrome'
     driver = None
 
-    def __init__(self, path_asset, browser = "chrome"):
+    def __init__(self, path_asset):
         self.path_asset = path_asset
-        self.browser = browser
         self.path_file = f"{path_asset}{self.path_file}"
 
     def _get_user_agent_browser(self):

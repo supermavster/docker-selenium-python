@@ -17,18 +17,22 @@ class MetaMask(PluginManager):
         "user_id": [12436990, 13014139],
     }
 
-    def __init__(self, path_assets, driver_manager=None, driver=None, browser="chrome"):
+    def __init__(self, path_assets, browser="chrome", driver_manager=None, driver=None):
+        self.path_assets = path_assets
+        self.browser = browser
+
+        self.driver_manager = driver_manager
+        self.driver = driver
+
+        super().__init__(path_assets, browser, driver_manager, driver)
+
+    def _init_variables(self):
         self.fails = 0
         self.private_key = None
         self.password = None
         self.recovery_phrase = None
         self.download_extension = None
-        self.path_assets = path_assets
-        self.driver_manager = driver_manager
-        self.driver = driver
-        self.browser = browser
         self.path_data = f"{self.path_assets}/{self.path_data}"
-        super().__init__(path_assets, driver_manager, driver, browser)
 
     # Init Process
     def set_passwords(self, password: str = None, recovery_phrase: str = None) -> None:
@@ -36,14 +40,6 @@ class MetaMask(PluginManager):
         self.password = password
         question = "What is your MetaMask recovery phrase?"
         self.recovery_phrase = recovery_phrase
-
-    def start(self):
-        # self.ask_passwords()
-        if self.browser_is_firefox():
-            self.url_extension = self.download_extension.get_url_extension(
-                self.data_extension_firefox
-            )
-        self.install()
 
     # Selenium Process
 

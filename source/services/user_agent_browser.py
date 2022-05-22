@@ -4,11 +4,8 @@ from helper.complement import Complement
 class UserAgentBrowser:
     path_file = None
 
-    def __init__(self, path_asset, browser):
+    def __init__(self, path_asset, browser, driver):
         self.path_file = f"{path_asset}/user_agent_{browser}.txt"
-        self.driver = None
-
-    def set_driver(self, driver):
         self.driver = driver
 
     def _get_user_agent(self):
