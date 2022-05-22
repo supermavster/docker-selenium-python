@@ -32,7 +32,9 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-
+    volumes:
+      - ./source/assets/extensions/firefox:/usr/src/app/assets/extensions/firefox
+    
   selenium-hub:
     image: selenium/hub:4.1.4-20220427
     container_name: selenium-hub

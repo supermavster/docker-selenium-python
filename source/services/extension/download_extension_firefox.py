@@ -15,7 +15,7 @@ class DownloadExtensionFirefox(ExtensionManager):
     )
 
     def __init__(self, path_assets):
-        self.path_file = f"{path_assets}{self.path_file}"
+        self.path_file = f"{path_assets}/{self.path_file}"
 
     def get_base_url(self, object_url):
         name_extension = object_url["collection_url"].split("/")[-1]

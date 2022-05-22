@@ -19,15 +19,18 @@ To run the script natively, we can use the next commands.
 1. You need to install Chrome or Firefox.
 
 2. Start the workspace.
+
     ```shell
     virtualenv venv
     source venv/bin/activate
     ```
+
 3. Copy the file .env to the workspace.
+
     ```shell
    cp .env source/
     ```
-   
+
     As example, can be `source/.env`
 
     ```dotenv
@@ -40,31 +43,38 @@ To run the script natively, we can use the next commands.
     ```
 
 5. Inside to the folder `source`
+
     ```shell
    cd source 
     ```
 
 6. Install the dependencies.
+
     ```shell
     python -m pip install --upgrade pip
     pip install -r requirements.txt
    ```
+
 7. Execute the script.
+
     ```shell
     python main.py
     ```
+
 8. Stop the workspace.
+
     ```shell
     deactivate
     ```
-   
+
 ## Dockerfile
 
 1. Copy the file .env to the workspace.
+
     ```shell
    cp .env source/
     ```
-   
+
     As example, can be `source/.env`
 
     ```dotenv
@@ -73,13 +83,15 @@ To run the script natively, we can use the next commands.
     BROWSER=chrome
     EXTENSIONS_CHROME=[""]
     ```
-   
+
 2. Build the Docker image.
+
     ```shell
     docker build -f docker/single/Dockerfile -t selenium-python-docker .
     ```
 
 3. Run the Docker image.
+
     ```shell
     docker run -it --rm -v $(pwd)/source:/usr/src/app -w /usr/src/app selenium-python-docker
     ```
@@ -87,10 +99,11 @@ To run the script natively, we can use the next commands.
 ## Docker-compose
 
 1. Copy the file .env to the workspace.
+
     ```shell
    cp .env source/
     ```
-   
+
     As example, can be `source/.env`
 
     ```dotenv
@@ -104,27 +117,32 @@ To run the script natively, we can use the next commands.
     ```
 
 2. Build the Docker image.
+
     ```shell
     docker-compose build
     ```
-   
+
 3. Up the Docker image.
+
     ```shell
     docker-compose up
     ```
-   
+
 4. Execute the script in docker service.
+
     ```shell
     docker-compose exec -it app bash
     ```
-     
+
     Or execute the script in the container.
+
     ```shell
     docker exec -it $(docker ps | grep app | awk '{print $1}') bash
     # python main.py
     ```
   
 5. Stop the Docker image.
+
     ```shell
     docker-compose down
     ```
