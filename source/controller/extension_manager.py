@@ -25,13 +25,14 @@ class ExtensionManager:
         self.extensions = []
 
         extensions = os.getenv('EXTENSIONS_' + self.browser.upper())
-        extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
-            .replace(', ', ',').replace(' ,', ',').split(',')
+        if extensions is not None:
+            extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
+                .replace(', ', ',').replace(' ,', ',').split(',')
 
-        if 'metamask' in extensions:
-            self.set_wallet()
-            if self.wallet is not None:
-                self.extensions.append(self.wallet.get_path_extension())
+            if 'metamask' in extensions:
+                self.set_wallet()
+                if self.wallet is not None:
+                    self.extensions.append(self.wallet.get_path_extension())
 
     def set_wallet(self):
         from controller.extension.metamask import MetaMask

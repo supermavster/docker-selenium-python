@@ -45,7 +45,7 @@ class DriverManager:
         self.path_driver = self.path_driver + driver_name
 
     def setup_driver(self):
-        if not Complement.check_file_exist(self.path_driver) and self.environment != 'remote':
+        if not Complement.check_file_exist(self.path_driver) and self.environment == 'local':
             self.download_driver()
 
     def download_driver(self):

@@ -107,6 +107,7 @@ class WebDriver:
 
     def start(self):
         self.driver_action.set_setting_window()
+        # print(self.driver_action.get_title())
         # self.driver_action.wait_time()
         self.example_metamask()
         self.driver_action.close_window()
