@@ -39,6 +39,10 @@ class DriverAction:
         if size > 1:
             self.driver.close()
 
+    def get_title(self):
+        """Get the title of the web page."""
+        return self.driver.title if self.driver.title else ""
+
     def close_window(self) -> None:
         """Try to close the webdriver."""
         try:

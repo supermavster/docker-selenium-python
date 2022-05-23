@@ -11,11 +11,6 @@ ENV APP_HOME /usr/src/app
 
 WORKDIR /$APP_HOME
 
-COPY ./source/ $APP_HOME/
-COPY .env $APP_HOME/
-RUN [ -f /$APP_HOME/.env ] || cp .env /$APP_HOME/
-ENV $(cat .env | xargs)
-
 # Install Python Version 3.10
 RUN apt-get update -y
 
@@ -37,8 +32,6 @@ RUN apt-get install -y curl
 
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 RUN pip install --upgrade pip
-
-RUN pip install -r requirements.txt
 
 # Install Browser
 RUN apt-get install --no-install-recommends -yqq \
@@ -63,6 +56,15 @@ RUN apt-get install --no-install-recommends -y \
     fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
     libnspr4 libnss3 lsb-release xdg-utils libxss1 libdbus-glib-1-2 libgbm1 \
     xvfb 
+
+# Generate App
+
+COPY ./source/ $APP_HOME/
+COPY .env $APP_HOME/
+RUN [ -f /$APP_HOME/.env ] || cp .env /$APP_HOME/
+ENV $(cat .env | xargs)
+
+RUN pip install -r requirements.txt
 
 # set display port to avoid crash
 CMD ["python3", "main.py"]
