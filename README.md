@@ -25,43 +25,50 @@ To run the script natively, we can use the next commands.
     source venv/bin/activate
     ```
 
-3. Copy the file .env to the workspace.
-
-    ```shell
-   cp .env source/
-    ```
+3. Edit the file .env to the workspace.
 
     As example, can be `source/.env`
 
     ```dotenv
     ENVIRONMENT=local
-    PATH_ASSETS=assets/
-    BROWSER=chrome
-    EXTENSIONS_CHROME=[""]
-    #BROWSER=firefox
-    #EXTENSIONS_FIREFOX=[""]
+    #ENVIRONMENT=docker
+    #ENVIRONMENT=remote
+
+    PATH_ASSETS=assets
+
+    #BROWSER=chrome
+    #EXTENSIONS_CHROME=["metamask"]
+
+    BROWSER=firefox
+    EXTENSIONS_FIREFOX=["metamask", "captcha"]
+
+    REMOTE_URL=http://selenium-hub:4444/wd/hub
+    #REMOTE_URL=http://0.0.0.0:4444/wd/hub
+    #REMOTE_URL=http://localhost:4444/wd/hub
+
+    METAMASK_AUTH=["SECRET", "A B C D E F G H I J K L"]
     ```
 
-5. Inside to the folder `source`
+4. Inside to the folder `source`
 
     ```shell
    cd source 
     ```
 
-6. Install the dependencies.
+5. Install the dependencies.
 
     ```shell
     python -m pip install --upgrade pip
     pip install -r requirements.txt
    ```
 
-7. Execute the script.
+6. Execute the script.
 
     ```shell
     python main.py
     ```
 
-8. Stop the workspace.
+7. Stop the workspace.
 
     ```shell
     deactivate
@@ -69,19 +76,29 @@ To run the script natively, we can use the next commands.
 
 ## Dockerfile
 
-1. Copy the file .env to the workspace.
-
-    ```shell
-   cp .env source/
-    ```
+1. Edit the file .env to the workspace.
 
     As example, can be `source/.env`
 
     ```dotenv
+    #ENVIRONMENT=local
     ENVIRONMENT=docker
-    PATH_ASSETS=assets/
+    #ENVIRONMENT=remote
+
+    PATH_ASSETS=assets
+
     BROWSER=chrome
-    EXTENSIONS_CHROME=[""]
+    EXTENSIONS_CHROME=["metamask", "captcha"]
+
+    #BROWSER=firefox
+    #EXTENSIONS_FIREFOX=["metamask"]
+
+    REMOTE_URL=http://selenium-hub:4444/wd/hub
+    #REMOTE_URL=http://0.0.0.0:4444/wd/hub
+    #REMOTE_URL=http://localhost:4444/wd/hub
+
+    METAMASK_AUTH=["SECRET", "A B C D E F G H I J K L"]
+
     ```
 
 2. Build the Docker image.
@@ -93,27 +110,34 @@ To run the script natively, we can use the next commands.
 3. Run the Docker image.
 
     ```shell
-    docker run -it --rm -v $(pwd)/source:/usr/src/app -w /usr/src/app selenium-python-docker
+    docker run -it --rm -v $(pwd)/source:/usr/src/app -w /usr/src/app --env-file=.env selenium-python-docker
     ```
 
 ## Docker-compose
 
-1. Copy the file .env to the workspace.
-
-    ```shell
-   cp .env source/
-    ```
+1. Edit the file .env to the workspace.
 
     As example, can be `source/.env`
 
     ```dotenv
+    #ENVIRONMENT=local
+    #ENVIRONMENT=docker
     ENVIRONMENT=remote
-    PATH_ASSETS=assets/
+
+    PATH_ASSETS=assets
+
     BROWSER=chrome
-    EXTENSIONS_CHROME=[""]
+    EXTENSIONS_CHROME=["metamask"]
+
     #BROWSER=firefox
-    #EXTENSIONS_FIREFOX=[""]
+    #EXTENSIONS_FIREFOX=["metamask"]
+
     REMOTE_URL=http://selenium-hub:4444/wd/hub
+    #REMOTE_URL=http://0.0.0.0:4444/wd/hub
+    #REMOTE_URL=http://localhost:4444/wd/hub
+
+    METAMASK_AUTH=["SECRET", "A B C D E F G H I J K L"]
+
     ```
 
 2. Build the Docker image.
@@ -141,7 +165,9 @@ To run the script natively, we can use the next commands.
     # python main.py
     ```
   
-5. Stop the Docker image.
+5. In the localhost:4000, you can see the result in session, note: the password of session vnc is `secret`
+
+6. Stop the Docker image.
 
     ```shell
     docker-compose down
