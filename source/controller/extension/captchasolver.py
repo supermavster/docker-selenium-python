@@ -1,12 +1,11 @@
 import random
 import time
 
-from selenium.webdriver.common.by import By
-
 from interface.extension.plugin_manager import PluginManager
 
 
 class CaptchaSolver(PluginManager):
+    SOLVER_CHALLENGE = False
     # Randomization Related
     MIN_RAND = 0.64
     MAX_RAND = 1.27
@@ -14,8 +13,8 @@ class CaptchaSolver(PluginManager):
     LONG_MAX_RAND = 11.1
     # Settings
     NUMBER_OF_ITERATIONS = 10
-    # RECAPTCHA_PAGE_URL = "https://patrickhlauke.github.io/recaptcha"
-    RECAPTCHA_PAGE_URL = "https://www.google.com/recaptcha/api2/demo"
+    RECAPTCHA_PAGE_URL = "https://patrickhlauke.github.io/recaptcha"
+    # RECAPTCHA_PAGE_URL = "https://www.google.com/recaptcha/api2/demo"
     # Chrome
     url_extension = (
         "https://chrome.google.com/webstore/detail/"
@@ -46,176 +45,135 @@ class CaptchaSolver(PluginManager):
         self.download_extension = None
         self.path_data = f"{self.path_assets}/{self.path_data}"
 
-    def set_test_url(self):
-        # Navigate to a ReCaptcha page
-        self.driver.get(self.RECAPTCHA_PAGE_URL)
+    def sleep_seconds(self):
         time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
 
-    def _check_exist_captcha(self):
-        return self.driver_action.visible("//iframe[contains(@src,'recaptcha')]") or False
-
-    def get_recaptcha_challenge(self):
-        # Get all the iframes on the page
-        iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
-
-        # Switch focus to ReCaptcha iframe
-        if len(iframes) > 0:
-            self.driver.switch_to.frame(iframes[0])
-            time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
-
-        # Verify ReCaptcha checkbox is present
-        if not self.driver_action.is_exists_by_xpath(
-                '//div[@class="recaptcha-checkbox-checkmark" '
-                "and "
-                '@role="presentation"]'
-        ):
-            message = f"[{self.current_iteration}] "
-            print(message + "No element in the frame!!")
-
-        # Click on ReCaptcha checkbox
-        xpath = '//div[@class="recaptcha-checkbox-border"]'
-        if self.driver_action.is_exists_by_xpath(xpath):
-            try:
-                self.driver_action.clickable(xpath)
-                time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
-            except Exception as e:
-                print(e)
-
-        # Check if the ReCaptcha has no challenge
-        xpath = '//span[@aria-checked="true"]'
-        exist = self.driver_action.is_exists_by_xpath(xpath)
-        if exist:
-            print(
-                "[{0}] ReCaptcha has no challenge. Trying again!".format(
-                    self.current_iteration
-                )
-            )
-        else:
-            return
-
-    def get_audio_challenge(self, iframes):
-        # Switch to the last iframe (the new one)
-        self.driver.switch_to.frame(iframes[-1])
-        # Check if the audio challenge button is present
-        if not self.driver_action.is_exists_by_xpath(
-                "//div[contains(@class, 'button-holder') "
-                "and "
-                "contains(@class, 'help-button-holder')]"
-        ):
-            print(f"[{self.current_iteration}] No class=button-holder!!")
-        else:
-            message = f"[{self.current_iteration}]"
-            print(message + "Clicking on Plugin challenge")
-            if self.driver_action.is_exists_by_xpath(
-                    "//div[contains(@class, 'button-holder') "
-                    "and "
-                    "contains(@class, 'help-button-holder')]"
-            ):
-                self.driver_action.clickable(
-                    "//div[contains(@class, 'button-holder') "
-                    "and "
-                    "contains(@class, 'help-button-holder')]"
-                )
-
-            time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
-
-            if self.driver_action.is_exists_by_xpath(
-                    "//*[contains(@class, 'rc-button-default') "
-                    "and "
-                    "contains(@class, 'goog-inline-block')]"
-            ):
-                self.driver_action.clickable(
-                    "//*[contains(@class, 'rc-button-default') "
-                    "and "
-                    "contains(@class, 'goog-inline-block')]"
-                )
-            else:
-                return True
-
-        # Check if the audio challenge button is present
-        if not self.driver_action.is_exists_by_xpath(
-                '//button[@id="recaptcha-audio-button"]'
-        ):
-            message = f"[{self.current_iteration}]"
-            print(message + "No element of audio challenge!!")
-            return False
-
-        print(f"[{self.current_iteration}] Clicking on audio challenge")
-        # Click on the audio challenge button
-        time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
-
-        return True
-
-    def _solve(self, current_iteration):
-        self.current_iteration = current_iteration + 1
-        # Get a ReCaptcha Challenge
-        self.get_recaptcha_challenge()
-        # Switch to page's main frame
-        self.driver.switch_to.default_content()
-        # Get all the iframes on the page again
-        iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
-        # Get audio challenge
-        self.get_audio_challenge(iframes)
-        # Switch to the ReCaptcha iframe to verify it is solved
-        self.driver.switch_to.default_content()
-
-    def _start_tries(self):
-        counter = 0
-        for i in range(self.NUMBER_OF_ITERATIONS):
-            if self._check_exist_captcha():
-                self._solve(i)
-                counter += 1
-                time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
-            else:
-                break
-            print("Successful breaks: {0}".format(counter))
-        message = f"{counter} - {self.NUMBER_OF_ITERATIONS}"
-        print(f"Total successful breaks: {message}")
-
-    def _check_webdriver(self):
-        if self.driver_manager is None or self.driver is None:
-            return False
-        if self.driver_manager and self.driver:
-            return True
-
-    def resolve_captcha(self):
-        if self._check_exist_captcha():
-            self._start_tries()
+    def set_test_url(self):
+        self.driver_action.set_setting_window(self.RECAPTCHA_PAGE_URL)
+        self.sleep_seconds()
 
     def resolve(self):
         """Resolve the captcha Google"""
         if self._check_webdriver():
-            self.resolve_captcha()
+            self._resolve_captcha()
 
-# # Test
-# def main():
-#     import os
-#     from controller.web_driver import WebDriver
-#
-#     # Env
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("controller/extension", "assets/")
-#     # Install with Chrome/Firefox
-#     browser = 'chrome'  # 'Firefox'
-#     # browser = 'Firefox'# Chrome
-#
-#     captcha_solver = CaptchaSolver(path_asset, browser=browser)
-#     captcha_solver.start()
-#     path_extension = captcha_solver.get_path_extension()
-#     web_driver = WebDriver(path_asset, browser, True)
-#     web_driver.config_driver([path_extension])
-#     driver_manager = web_driver.get_driver_manager()
-#     driver = web_driver.get_driver()
-#     captcha_solver.set_driver(driver_manager, driver)
-#     # Test Solvent
-#     captcha_solver.set_test_url()
-#     captcha_solver.resolve()
-#     driver.close()
-#
-#
-# if __name__ == '__main__':
-#     main()
+    def _check_webdriver(self):
+        if self.driver_action is None or self.driver is None:
+            return False
+        if self.driver_action and self.driver:
+            return True
+
+    def _resolve_captcha(self):
+        self._start_tries()
+
+    def _start_tries(self):
+        counter = 0
+        for i in range(self.NUMBER_OF_ITERATIONS):
+            if self.SOLVER_CHALLENGE:
+                break
+            else:
+                if self._check_exist_captcha():
+                    self._solve()
+                    self.current_iteration = i + 1
+                    counter += 1
+                else:
+                    break
+            print("Successful breaks: {0}".format(counter))
+        message = f"{counter} - {self.NUMBER_OF_ITERATIONS}"
+        print(f"Total successful breaks: {message}")
+
+    def _check_exist_captcha(self):
+        return self.driver_action.visible("//iframe[contains(@src,'recaptcha')]") or False
+
+    def _solve(self):
+        # Get a ReCaptcha Challenge
+        if self._get_recaptcha_challenge():
+            # Switch to page's main frame
+            self.driver_action.switch_to_default_content()
+            # Get audio challenge
+            check_challenge = self._get_audio_challenge()
+            if check_challenge:
+                self.SOLVER_CHALLENGE = check_challenge
+            # Switch to the ReCaptcha iframe to verify it is solved
+            self.driver_action.switch_to_default_content()
+
+    def _get_recaptcha_challenge(self):
+        iframes = self._get_all_iframes()
+        if self._switch_recaptcha_iframe(iframes):
+            self._click_recaptcha_checkbox()
+            return self._check_recaptcha_has_challenge()
+        return False
+
+    def _get_all_iframes(self):
+        iframes = self.driver_action.find_all_by_tag('iframe')
+        if len(iframes) > 0:
+            return iframes
+        return []
+
+    def _switch_recaptcha_iframe(self, iframes):
+        # Switch focus to ReCaptcha iframe
+        self.driver_action.switch_to_iframe(iframes[0])
+        check_exist = self.driver_action.is_exists_by_xpath(
+            '//div[@class="recaptcha-checkbox-checkmark" and @role="presentation"]')
+        if not check_exist:
+            print("No element in the frame!!")
+        return check_exist
+
+    def _click_recaptcha_checkbox(self):
+        xpath = '//div[@class="recaptcha-checkbox-border"]'
+        if self.driver_action.is_exists_by_xpath(xpath):
+            self.driver_action.clickable(xpath)
+
+    def _check_recaptcha_has_challenge(self):
+        # Check if the ReCaptcha has no challenge
+        exist = self.driver_action.is_exists_by_xpath('//span[@aria-checked="true"]')
+        if exist:
+            print(f"[{self.current_iteration}] ReCaptcha has no challenge. Trying again!")
+        return not exist
+
+    def _get_audio_challenge(self):
+        # Get all the iframes on the page again
+        iframes = self._get_all_iframes()
+        # Switch to the last iframe (the new one)
+        self.driver_action.switch_to_iframe(iframes[-1])
+        # Check and press Audio challenge button
+        if self._check_audio_button():
+            if not self._check_submit_button():
+                return True
+
+        return self._check_recaptcha_audio_button()
+
+    def _check_recaptcha_audio_button(self):
+        if not self._check_button('//button[@id="recaptcha-audio-button"]'):
+            print("No element of audio challenge!!")
+            return False
+        return True
+
+    def _check_audio_button(self):
+        # Check if the audio challenge button is present
+        xpath = "//div[contains(@class, 'button-holder') and contains(@class, 'help-button-holder')]"
+        # Check Audio Button
+        check_exist = self._check_button(xpath)
+        if check_exist:
+            # Click on the Audio Button
+            self._click_button(xpath)
+        return check_exist
+
+    def _check_submit_button(self):
+        # Check again button is present
+        xpath = "//*[contains(@class, 'rc-button-default') and contains(@class, 'goog-inline-block')]"
+        # Check Audio Button
+        check_exist = self._check_button(xpath)
+        if check_exist:
+            # Click on the Audio Button
+            self._click_button(xpath)
+        return check_exist
+
+    def _check_button(self, xpath):
+        check_exist = self.driver_action.is_exists_by_xpath(xpath)
+        if not check_exist:
+            print("No exist button")
+        return check_exist
+
+    def _click_button(self, xpath):
+        self.driver_action.clickable(xpath)

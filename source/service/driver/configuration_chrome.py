@@ -72,6 +72,7 @@ class ConfigurationChrome(DriverInterface):
     def _get_options_general(self, options_browser):
         options_browser.add_argument("--lang=en-US")
         options_browser.add_argument("--disable-infobars")
+        options_browser.add_argument("--start-maximized")
         options_browser.add_experimental_option(
             "prefs",
             {
@@ -90,7 +91,6 @@ class ConfigurationChrome(DriverInterface):
         options_browser.add_argument("--log-level=3")
         options_browser.add_argument("--disable-gpu")
         options_browser.add_argument("--no-first-run")
-        options_browser.add_argument("--start-maximized")
         options_browser.add_argument("--disk-cache-size=1")
         options_browser.add_argument("--media-cache-size=1")
         options_browser.add_argument("--no-service-autorun")

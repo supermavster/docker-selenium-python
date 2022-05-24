@@ -67,12 +67,11 @@ class MetaMask(PluginManager):
             # Set Private Key
             self._set_private_key()
         except Exception as e:  # Failed - a web element is not accessible.
-            print(e)
-            # self.fails += 1  # Increment the counter.
-            # if self.fails < 2:  # Retry login to the MetaMask.
-            #     self.login()
-            # else:  # Failed twice - the wallet is not accessible.
-            self.driver.quit()  # Stop the webdriver.
+            self.fails += 1  # Increment the counter.
+            if self.fails < 2:  # Retry login to the MetaMask.
+                self.login()
+            else:  # Failed twice - the wallet is not accessible.
+                self.driver.quit()  # Stop the webdriver.
 
     def _set_data_password(self):
         # If a recovery phrase and password are set.
@@ -144,40 +143,3 @@ class MetaMask(PluginManager):
                 self.driver_action.window_handles(1)  # Switch back to OpenSea.
             except (Exception,):
                 pass  # Ignore the exception.
-
-#
-# ## Test
-# def main():
-#     import os
-#     from controller.web_driver import WebDriver
-#
-#     # Env
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("controller/extension", "assets/")
-#     # Install with Chrome/Firefox
-#     # browser = 'chrome'  # 'Firefox'
-#     browser = 'firefox'  # Chrome
-#
-#     metamask = MetaMask(path_asset, browser=browser)
-#     metamask.start()
-#     path_extension = metamask.get_path_extension()
-#     web_driver = WebDriver(path_asset, browser, True)
-#     web_driver.config_driver([path_extension])
-#     web_driver.start()
-#     driver_action = web_driver.get_driver_action()
-#     driver = web_driver.get_driver()
-#     metamask.set_driver(driver_action, driver)
-#     # Open metamask extension in chrome
-#     keys = os.getenv('METAMASK_AUTH')
-#     keys = keys.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
-#     metamask.set_passwords(keys[0], keys[1])
-#     metamask.login()
-#     driver.close()
-#
-#
-# if __name__ == '__main__':
-#     main()
