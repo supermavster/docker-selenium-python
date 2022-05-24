@@ -53,39 +53,3 @@ class DownloadExtensionFirefox(ExtensionManager):
         path_file = self._get_path_extension(url, info_extension)
         self._download_extension(url, path_file)
         return path_file
-
-# # Test
-# def main():
-#     import os
-#
-#     # Env
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("service/extension", "assets/")
-#     download_extension = DownloadExtensionFirefox(path_asset)
-#
-#     url_extensions = [
-#         {
-#             'url': 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask',
-#             'collection_url': 'https://addons.mozilla.org/en-US/firefox/addon/metamask-legacy-web3/',
-#             'user_id': [12436990, 13014139]
-#         },
-#         {
-#             'url': 'https://addons.mozilla.org/en-US/firefox/addon/buster-captcha-solver',
-#             'collection_url': 'https://addons.mozilla.org/en-US/firefox/addon/youtube-video-quality',
-#             'user_id': [12929064]
-#         },
-#     ]
-#     for object_url in url_extensions:
-#         url_extension = download_extension.get_url_extension(object_url)
-#         check_extension = download_extension.exist_extension_by_url(url_extension)
-#         if not check_extension['exist']:
-#             download_extension.generate_extension(url_extension)
-#         print(check_extension['path_file'])
-#
-#
-# if __name__ == '__main__':
-#     main()

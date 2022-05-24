@@ -51,12 +51,13 @@ class DriverAction:
         except Exception as e:
             print("error", e)
 
-    def is_exists_by_xpath(self, xpath):
+    def is_exists_by_xpath(self, xpath, show_error=False):
         try:
             # WDW(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
             self.driver.find_element(By.XPATH, xpath)
         except Exception as e:
-            print("error", e)
+            if show_error:
+                print("error", e)
             return False
         return True
 
@@ -95,16 +96,24 @@ class DriverAction:
         except Exception as e:
             print("error", e)
 
-    def clickable(self, element: str) -> None:
+    def clickable(self, element: str, show_error=False) -> None:
         """Click on an element if it's clickable using Selenium."""
         try:
             WDW(self.driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, element))
             ).click()
         except Exception as e:
-            print("error", e)
+            if show_error:
+                print("error", e)
+            self.clickable_js(element, show_error)
+
+    def clickable_js(self, element: str, show_error=False) -> None:
+        try:
             # JavaScript can bypass this.
             self.driver.execute_script("arguments[0].click();", self.visible(element))
+        except Exception as e:
+            if show_error:
+                print("error", e)
 
     def visible(self, element: str):
         """Check if an element is visible using Selenium."""
@@ -125,13 +134,12 @@ class DriverAction:
 
     def find_all_by_tag(self, element: str):
         try:
-            return  WDW(self.driver, 15).until(
+            return WDW(self.driver, 15).until(
                 lambda _: self.driver.find_elements(By.TAG_NAME, element)
             )
         except Exception as e:
             print("error", e)
             return []
-
 
     def send_keys(self, element: str, keys: str) -> None:
         """Send keys to an element if it's visible using Selenium."""

@@ -73,7 +73,6 @@ class WebDriver:
         self.driver_manager.configure_master(path_extensions)
         self.driver = self.driver_manager.get_driver()
         self._set_driver_action()
-        print(path_extensions, len(path_extensions))
         if path_extensions is not None and len(path_extensions) > 0:
             self._set_extension_manager()
 
@@ -108,12 +107,16 @@ class WebDriver:
         self.driver_action = DriverAction(self.driver, self.is_chrome, self.is_firefox)
 
     def start(self):
-        # self.driver_action.set_setting_window()
-        # print(self.driver_action.get_title())
-        # self.driver_action.wait_time()
+        self.driver_action.set_setting_window()
+        # Normal
+        self.driver_action.wait_time()
+        print(self.driver_action.get_title())
+
+        # Metamask
         # self.example_metamask()
-        self.extension_manager.captcha.set_test_url()
-        self.extension_manager.captcha.resolve()
+
+        # CAPTCHA
+        # self.example_captcha()
 
         self.driver_action.close_window()
 
@@ -122,21 +125,8 @@ class WebDriver:
         keys = os.getenv('METAMASK_AUTH')
         keys = keys.replace('[', '').replace(']', '').replace('"', '').replace(', ', ',').replace(' ,', ',').split(',')
         self.extension_manager.wallet.set_passwords(keys[0], keys[1])
-        # self.extension_manager.wallet.set_driver(self.driver_action, self.driver)
         self.extension_manager.wallet.login()
 
-# # TEST
-# def main():
-#     import os
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("helper", "assets")
-#     webdriver = WebDriver(path_asset, "chrome")
-#     # webdriver = WebDriver(path_asset, 'firefox')
-#     driver = webdriver.get_driver()
-#     print(webdriver.path_driver)
-#
-#
-# if __name__ == '__main__':
-#     main()
+    def example_captcha(self):
+        self.extension_manager.captcha.set_test_url()
+        self.extension_manager.captcha.resolve()

@@ -98,36 +98,3 @@ class DownloadExtensionChrome(ExtensionManager):
         path_file = data["path_file"]
         self._download_extension(url, path_file)
         return data["path_file"]
-
-# # Test
-# def main():
-#     import os
-#
-#     # Env
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#
-#     # Get path asset
-#     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("service/extension", "assets/")
-#     download_extension_chrome = DownloadExtensionChrome(path_asset)
-#
-#     url_extensions = [
-#         "https://chrome.google.com/webstore/detail/"
-#         "metamask/nkbihfbeogaeaoehlefnkodbefgpgknn",
-#         "https://chrome.google.com/webstore/detail/"
-#         "buster-captcha-solver-for/mpbjkejclgfgadiemmefgebjfooflfhl",
-#         "https://chrome.google.com/webstore/detail/"
-#         "coinbase-wallet-extension/hnfanknocfeofbddgcijnmhnfnkdnaad",
-#     ]
-#     for url_extension in url_extensions:
-#         check_extension = download_extension_chrome.exist_extension_by_url(
-#             url_extension
-#         )
-#         if not check_extension["exist"]:
-#             download_extension_chrome.generate_extension(url_extension)
-#         print(check_extension["path_file"])
-#
-#
-# if __name__ == "__main__":
-#     main()
