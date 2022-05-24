@@ -2,8 +2,8 @@ from abc import abstractmethod
 
 from helper.complement import Complement
 from interface.interface import Interface
-from services.extension.download_extension_chrome import DownloadExtensionChrome
-from services.extension.download_extension_firefox import DownloadExtensionFirefox
+from service.extension.download_extension_chrome import DownloadExtensionChrome
+from service.extension.download_extension_firefox import DownloadExtensionFirefox
 
 
 class PluginManager(metaclass=Interface):

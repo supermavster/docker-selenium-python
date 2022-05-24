@@ -30,7 +30,7 @@ class UserAgentBrowser:
 #     browser = "chrome"
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("services", "assets")
+#     path_asset = path_asset.replace("service", "assets")
 #     user_agent_browser = UserAgentBrowser(path_asset, browser)
 #     driver = None
 #     if not user_agent_browser.exist_user_agent():

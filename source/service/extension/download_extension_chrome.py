@@ -1,7 +1,7 @@
 import re
 
 from interface.extension.extension_manager import ExtensionManager
-from services.user_agent_browser import UserAgentBrowser
+from service.user_agent_browser import UserAgentBrowser
 
 
 class DownloadExtensionChrome(ExtensionManager):
@@ -109,7 +109,7 @@ class DownloadExtensionChrome(ExtensionManager):
 #
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("services/extension", "assets/")
+#     path_asset = path_asset.replace("service/extension", "assets/")
 #     download_extension_chrome = DownloadExtensionChrome(path_asset)
 #
 #     url_extensions = [
