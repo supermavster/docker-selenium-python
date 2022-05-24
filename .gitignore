@@ -261,3 +261,5 @@ cython_debug/
 !/source/.env
 /source/.env
 ./source/.env
+source/venv
+venv

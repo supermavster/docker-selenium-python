@@ -3,7 +3,7 @@ import time
 
 from selenium.webdriver.common.by import By
 
-from interface.plugin_manager import PluginManager
+from interface.extension.plugin_manager import PluginManager
 
 
 class CaptchaSolver(PluginManager):
@@ -31,14 +31,20 @@ class CaptchaSolver(PluginManager):
                           "firefox/addon/youtube-video-quality",
     }
 
-    def __init__(self, path_assets, driver_manager=None, driver=None, browser="Chrome"):
-        self.download_extension = None
+    def __init__(self, path_assets, browser="chrome", driver_manager=None, driver_action=None, driver=None):
         self.path_assets = path_assets
-        self.driver_manager = driver_manager
-        self.driver = driver
         self.browser = browser
+        self.driver_manager = driver_manager
+        self.driver_action = driver_action
+        self.driver = driver
+
+        self._init_variables()
+
+        super().__init__(path_assets, browser, driver_manager, driver)
+
+    def _init_variables(self):
+        self.download_extension = None
         self.path_data = f"{self.path_assets}/{self.path_data}"
-        super().__init__(path_assets, driver_manager, driver, browser)
 
     def set_test_url(self):
         # Navigate to a ReCaptcha page
@@ -46,7 +52,7 @@ class CaptchaSolver(PluginManager):
         time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
 
     def _check_exist_captcha(self):
-        return self.driver_manager.visible("//iframe[contains(@src,'recaptcha')]") or False
+        return self.driver_action.visible("//iframe[contains(@src,'recaptcha')]") or False
 
     def get_recaptcha_challenge(self):
         # Get all the iframes on the page
@@ -58,7 +64,7 @@ class CaptchaSolver(PluginManager):
             time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
 
         # Verify ReCaptcha checkbox is present
-        if not self.driver_manager.is_exists_by_xpath(
+        if not self.driver_action.is_exists_by_xpath(
                 '//div[@class="recaptcha-checkbox-checkmark" '
                 "and "
                 '@role="presentation"]'
@@ -68,16 +74,16 @@ class CaptchaSolver(PluginManager):
 
         # Click on ReCaptcha checkbox
         xpath = '//div[@class="recaptcha-checkbox-border"]'
-        if self.driver_manager.is_exists_by_xpath(xpath):
+        if self.driver_action.is_exists_by_xpath(xpath):
             try:
-                self.driver_manager.clickable(xpath)
+                self.driver_action.clickable(xpath)
                 time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
             except Exception as e:
                 print(e)
 
         # Check if the ReCaptcha has no challenge
         xpath = '//span[@aria-checked="true"]'
-        exist = self.driver_manager.is_exists_by_xpath(xpath)
+        exist = self.driver_action.is_exists_by_xpath(xpath)
         if exist:
             print(
                 "[{0}] ReCaptcha has no challenge. Trying again!".format(
@@ -91,7 +97,7 @@ class CaptchaSolver(PluginManager):
         # Switch to the last iframe (the new one)
         self.driver.switch_to.frame(iframes[-1])
         # Check if the audio challenge button is present
-        if not self.driver_manager.is_exists_by_xpath(
+        if not self.driver_action.is_exists_by_xpath(
                 "//div[contains(@class, 'button-holder') "
                 "and "
                 "contains(@class, 'help-button-holder')]"
@@ -100,12 +106,12 @@ class CaptchaSolver(PluginManager):
         else:
             message = f"[{self.current_iteration}]"
             print(message + "Clicking on Plugin challenge")
-            if self.driver_manager.is_exists_by_xpath(
+            if self.driver_action.is_exists_by_xpath(
                     "//div[contains(@class, 'button-holder') "
                     "and "
                     "contains(@class, 'help-button-holder')]"
             ):
-                self.driver_manager.clickable(
+                self.driver_action.clickable(
                     "//div[contains(@class, 'button-holder') "
                     "and "
                     "contains(@class, 'help-button-holder')]"
@@ -113,12 +119,12 @@ class CaptchaSolver(PluginManager):
 
             time.sleep(random.uniform(self.LONG_MIN_RAND, self.LONG_MAX_RAND))
 
-            if self.driver_manager.is_exists_by_xpath(
+            if self.driver_action.is_exists_by_xpath(
                     "//*[contains(@class, 'rc-button-default') "
                     "and "
                     "contains(@class, 'goog-inline-block')]"
             ):
-                self.driver_manager.clickable(
+                self.driver_action.clickable(
                     "//*[contains(@class, 'rc-button-default') "
                     "and "
                     "contains(@class, 'goog-inline-block')]"
@@ -127,7 +133,7 @@ class CaptchaSolver(PluginManager):
                 return True
 
         # Check if the audio challenge button is present
-        if not self.driver_manager.is_exists_by_xpath(
+        if not self.driver_action.is_exists_by_xpath(
                 '//button[@id="recaptcha-audio-button"]'
         ):
             message = f"[{self.current_iteration}]"

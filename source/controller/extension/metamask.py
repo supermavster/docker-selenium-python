@@ -1,4 +1,4 @@
-from interface.plugin_manager import PluginManager
+from interface.extension.plugin_manager import PluginManager
 
 
 class MetaMask(PluginManager):

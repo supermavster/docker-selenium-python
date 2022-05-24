@@ -2,21 +2,13 @@ import os
 
 from selenium import webdriver
 
+from interface.driver_interface import DriverInterface
 
-class ConfigurationChrome:
-    driver = None
-    path_driver = None
-    path_assets = None
-    environment = 'local'
+
+class ConfigurationChrome(DriverInterface):
 
     def __init__(self, path_driver, path_assets, environment):
-        self.path_driver = path_driver
-        self.path_assets = path_assets
-        self.environment = environment
-
-    def set_driver(self):
-        options_browser = self._get_options()
-        self.driver = self._get_manager_driver(options_browser)
+        super().__init__(path_driver, path_assets, environment)
 
     def set_driver_extension(self, path_extensions):
         options_browser = self._get_options()
@@ -62,20 +54,6 @@ class ConfigurationChrome:
         options_browser.add_extension(path_extension)
         return options_browser
 
-    def get_driver(self):
-        return self.driver
-
-    def _get_manager_driver(self, options_browser):
-        match self.environment:
-            case 'local':
-                return self._get_driver_local(options_browser)
-            case 'docker':
-                return self._get_driver_docker(options_browser)
-            case 'remote':
-                return self._get_driver_remote(options_browser)
-            case default:
-                return None
-
     def _get_driver_local(self, options_browser):
         service = self._get_service()
         return webdriver.Chrome(service=service, options=options_browser)
@@ -83,37 +61,13 @@ class ConfigurationChrome:
     def _get_driver_docker(self, options_browser):
         return webdriver.Chrome(options=options_browser)
 
-    def _get_driver_remote(self, options_browser):
-        remote_url = os.getenv("REMOTE_URL") or "http://selenium-hub:4444/wd/hub"
-        return webdriver.Remote(
-            command_executor=remote_url,
-            options=options_browser
-        )
-
     def _get_service(self):
         from selenium.webdriver.chrome.service import Service as ServiceChrome
         service_browser = ServiceChrome(self.path_driver)
         return service_browser
 
-    def _get_options(self):
-        options_browser = self._set_service_option()
-        options_browser = self._get_options_general(options_browser)
-        options_browser = self._get_manager_options(options_browser)
-        return options_browser
-
     def _set_service_option(self):
         return webdriver.ChromeOptions()
-
-    def _get_manager_options(self, options_browser):
-        match self.environment:
-            case 'local':
-                return self._get_options_local(options_browser)
-            case 'docker':
-                return self._get_options_docker(options_browser)
-            case 'remote':
-                return self._get_options_remote(options_browser)
-            case default:
-                return options_browser
 
     def _get_options_general(self, options_browser):
         options_browser.add_argument("--lang=en-US")
@@ -150,7 +104,4 @@ class ConfigurationChrome:
         # options_browser.add_argument('--headless')
         options_browser.add_argument('--no-sandbox')
         options_browser.add_argument('--disable-dev-shm-usage')
-        return options_browser
-
-    def _get_options_remote(self, options_browser):
         return options_browser
