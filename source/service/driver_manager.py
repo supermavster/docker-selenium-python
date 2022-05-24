@@ -2,8 +2,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 from helper.complement import Complement
-from services.driver.configuration_chrome import ConfigurationChrome
-from services.driver.configuration_firefox import ConfigurationFirefox
+from service.driver.configuration_chrome import ConfigurationChrome
+from service.driver.configuration_firefox import ConfigurationFirefox
 
 
 class DriverManager:

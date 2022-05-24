@@ -64,7 +64,7 @@ class DownloadExtensionFirefox(ExtensionManager):
 #
 #     # Get path asset
 #     path_asset = os.path.dirname(os.path.abspath(__file__))
-#     path_asset = path_asset.replace("services/extension", "assets/")
+#     path_asset = path_asset.replace("service/extension", "assets/")
 #     download_extension = DownloadExtensionFirefox(path_asset)
 #
 #     url_extensions = [

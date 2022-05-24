@@ -1,8 +1,8 @@
 from controller.extension_manager import ExtensionManager
 from helper.complement import Complement
-from services.driver_action import DriverAction
-from services.driver_manager import DriverManager
-from services.user_agent_browser import UserAgentBrowser
+from service.driver_action import DriverAction
+from service.driver_manager import DriverManager
+from service.user_agent_browser import UserAgentBrowser
 
 
 class WebDriver:
