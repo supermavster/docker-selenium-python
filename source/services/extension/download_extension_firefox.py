@@ -1,6 +1,6 @@
 import requests
 
-from interface.extension_manager import ExtensionManager
+from interface.extension.extension_manager import ExtensionManager
 
 
 class DownloadExtensionFirefox(ExtensionManager):
@@ -15,6 +15,7 @@ class DownloadExtensionFirefox(ExtensionManager):
     )
 
     def __init__(self, path_assets):
+        super().__init__()
         self.path_file = f"{path_assets}/{self.path_file}"
 
     def get_base_url(self, object_url):

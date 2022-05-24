@@ -1,7 +1,7 @@
 import os
-from pyvirtualdisplay import Display
 
 from dotenv import load_dotenv
+from pyvirtualdisplay import Display
 
 from .web_driver import WebDriver
 

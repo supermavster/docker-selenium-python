@@ -55,8 +55,6 @@ class ExtensionManager(metaclass=Interface):
 
     @abstractmethod
     def _download_extension(self, url, path_file):
-        print(url)
-        print(path_file)
         request_uri = requests.get(url)
         content = request_uri.content
         Complement.write_file(path_file, content, "wb")

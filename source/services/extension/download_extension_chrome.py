@@ -1,7 +1,6 @@
 import re
 
-from controller.web_driver import WebDriver
-from interface.extension_manager import ExtensionManager
+from interface.extension.extension_manager import ExtensionManager
 from services.user_agent_browser import UserAgentBrowser
 
 
@@ -13,6 +12,7 @@ class DownloadExtensionChrome(ExtensionManager):
     driver = None
 
     def __init__(self, path_assets):
+        super().__init__()
         self.path_assets = path_assets
         self.path_file = f"{path_assets}/{self.path_file}"
 
