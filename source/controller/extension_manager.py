@@ -8,6 +8,7 @@ class ExtensionManager:
     driver_action = None
     driver = None
     wallet = None
+    captcha = None
     extensions = []
 
     def __init__(self, path_assets, browser, driver_manager=None, driver_action=None, driver=None):
@@ -29,10 +30,32 @@ class ExtensionManager:
             extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
                 .replace(', ', ',').replace(' ,', ',').split(',')
 
-            if 'metamask' in extensions:
-                self.set_wallet()
-                if self.wallet is not None:
-                    self.extensions.append(self.wallet.get_path_extension())
+            for extension in extensions:
+                match extension:
+                    case 'metamask':
+                        self.start_wallet()
+                    case 'captcha':
+                        self.start_captcha()
+
+    def start_captcha(self):
+        self.set_captcha()
+        if self.captcha is not None:
+            self.extensions.append(self.captcha.get_path_extension())
+
+    def set_captcha(self):
+        from controller.extension.captchasolver import CaptchaSolver
+
+        self.captcha = CaptchaSolver(self.path_assets, self.browser, self.driver_manager, self.driver_action,
+                                     self.driver)
+        self.captcha.start()
+
+    def get_captcha(self):
+        return self.captcha
+
+    def start_wallet(self):
+        self.set_wallet()
+        if self.wallet is not None:
+            self.extensions.append(self.wallet.get_path_extension())
 
     def set_wallet(self):
         from controller.extension.metamask import MetaMask

@@ -73,6 +73,7 @@ class WebDriver:
         self.driver_manager.configure_master(path_extensions)
         self.driver = self.driver_manager.get_driver()
         self._set_driver_action()
+        print(path_extensions, len(path_extensions))
         if path_extensions is not None and len(path_extensions) > 0:
             self._set_extension_manager()
 
@@ -94,6 +95,7 @@ class WebDriver:
         self.extension_manager = ExtensionManager(self.path_assets, self.browser)
 
     def _set_extension_manager(self):
+        self.extension_manager = None
         self.extension_manager = ExtensionManager(self.path_assets, self.browser, self.driver_manager,
                                                   self.driver_action, self.driver)
 
@@ -106,10 +108,13 @@ class WebDriver:
         self.driver_action = DriverAction(self.driver, self.is_chrome, self.is_firefox)
 
     def start(self):
-        self.driver_action.set_setting_window()
+        # self.driver_action.set_setting_window()
         # print(self.driver_action.get_title())
         # self.driver_action.wait_time()
-        self.example_metamask()
+        # self.example_metamask()
+        self.extension_manager.captcha.set_test_url()
+        self.extension_manager.captcha.resolve()
+
         self.driver_action.close_window()
 
     def example_metamask(self):

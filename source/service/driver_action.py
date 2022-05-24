@@ -31,6 +31,7 @@ class DriverAction:
             print("error", e)
 
     def set_setting_window(self, start_url="https://google.com"):
+        """Start the webdriver."""
         self.driver.get(start_url)
         # How many tabs
         handles = self.driver.window_handles
@@ -71,6 +72,12 @@ class DriverAction:
         """Switch to the MetaMask pop up tab."""
         self.window_handles(index)
 
+    def switch_to_iframe(self, iframe):
+        self.driver.switch_to.frame(iframe)
+
+    def switch_to_default_content(self):
+        self.driver.switch_to.default_content()
+
     def check_diff_current_vs_url(self, url):
         try:
             return WDW(self.driver, 5).until(lambda _: self.driver.current_url != url)
@@ -108,6 +115,23 @@ class DriverAction:
         except Exception as e:
             print("error", e)
             return False
+
+    def find_by_tag(self, element: str):
+        try:
+            return self.driver.find_element(By.TAG_NAME, element)
+        except Exception as e:
+            print("error", e)
+            return []
+
+    def find_all_by_tag(self, element: str):
+        try:
+            return  WDW(self.driver, 15).until(
+                lambda _: self.driver.find_elements(By.TAG_NAME, element)
+            )
+        except Exception as e:
+            print("error", e)
+            return []
+
 
     def send_keys(self, element: str, keys: str) -> None:
         """Send keys to an element if it's visible using Selenium."""
