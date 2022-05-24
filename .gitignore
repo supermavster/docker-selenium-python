@@ -258,8 +258,5 @@ cython_debug/
 !/source/assets/
 /source/assets/
 ./source/assets/
-!/source/.env
-/source/.env
-./source/.env
 source/venv
 venv
