@@ -13,17 +13,11 @@ from service.user_agent_browser import UserAgentBrowser
 class WebDriver:
     """ WebDriver class for the controller. """
     path_assets = None
-    is_configured = False
-
     browser = None
-    is_chrome = False
-    is_firefox = False
     environment = 'local'
-
     driver = None
     driver_manager = None
     driver_action = None
-    user_agent_browser = None
     extension_manager = None
 
     def __init__(self, path_assets, browser, environment):
@@ -33,17 +27,14 @@ class WebDriver:
         self._init()
 
     def _init(self):
-        self._set_main_variables()
         self._start_driver()
 
-    def _set_main_variables(self):
-        self.is_chrome = Complement.browser_is_chrome(self.browser)
-        self.is_firefox = Complement.browser_is_firefox(self.browser)
+    def _get_is_configured(self):
         path_file = f"{self.path_assets}/config_{self.browser}"
-        self.is_configured = Complement.check_file_exist(path_file)
+        return Complement.check_file_exist(path_file)
 
     def _start_driver(self):
-        if not self.is_configured:
+        if not self._get_is_configured():
             self._configure_driver()
 
         self._download_extension()
@@ -84,9 +75,9 @@ class WebDriver:
             self._set_extension_manager()
 
     def _install_user_agent(self):
-        self.user_agent_browser = UserAgentBrowser(self.path_assets, self.browser, self.driver)
-        if not self.user_agent_browser.exist_user_agent():
-            self.user_agent_browser.data_user_agent()
+        user_agent_browser = UserAgentBrowser(self.path_assets, self.browser, self.driver)
+        if not user_agent_browser.exist_user_agent():
+            user_agent_browser.data_user_agent()
 
     def _make_config_file(self):
         Complement.write_file(f"{self.path_assets}/config_{self.browser}", "True")
@@ -105,8 +96,7 @@ class WebDriver:
     def _set_extension_manager(self):
         self.extension_manager = None
         self.extension_manager = ExtensionManager(self.path_assets, self.browser,
-                                                  self.driver_manager, self.driver_action,
-                                                  self.driver)
+                                                  self.driver_action, self.driver)
 
     def _get_path_extension(self):
         if self.extension_manager is not None:
@@ -114,7 +104,9 @@ class WebDriver:
         return []
 
     def _set_driver_action(self):
-        self.driver_action = DriverAction(self.driver, self.is_chrome, self.is_firefox)
+        is_chrome = Complement.browser_is_chrome(self.browser)
+        is_firefox = Complement.browser_is_firefox(self.browser)
+        self.driver_action = DriverAction(self.driver, is_chrome, is_firefox)
 
     def start(self):
         """ Start the driver """

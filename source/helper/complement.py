@@ -35,13 +35,13 @@ class Complement:
         shutil.move(src, dest)
 
     @staticmethod
-    def write_file(path, content, mode="w"):
+    def write_file(path, content, mode="w", encoding="utf-8"):
         """ Write file. """
-        with open(path, mode) as file:
+        with open(path, mode, encoding=encoding) as file:
             file.write(content)
 
     @staticmethod
-    def read_file(path):
+    def read_file(path, encoding="utf-8"):
         """ Read file. """
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding=encoding) as file:
             return file.read()

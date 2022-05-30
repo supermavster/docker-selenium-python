@@ -16,11 +16,10 @@ class PluginManager(metaclass=Interface):
     # Firefox
     data_extension_firefox = {}
 
-    def __init__(self, path_assets, browser, driver_manager=None, driver=None):
+    def __init__(self, path_assets, browser, driver=None):
         self.path_assets = path_assets
         self.browser = browser
 
-        self.driver_manager = driver_manager
         self.driver = driver
 
         self.download_extension = None
@@ -30,7 +29,7 @@ class PluginManager(metaclass=Interface):
     def set_config(self):
         """ Set config """
         self.set_browser()
-        self.set_driver(self.driver_manager, self.driver)
+        self.set_driver(self.driver)
 
     # @abstractmethod
     def set_browser(self):
@@ -51,15 +50,10 @@ class PluginManager(metaclass=Interface):
         return Complement.browser_is_firefox(self.browser)
 
     # @abstractmethod
-    def set_driver(self, driver_manager, driver=None):
+    def set_driver(self, driver):
         """ Set driver """
-        if driver_manager is not None:
-            self.driver_manager = driver_manager
-            if driver is None:
-                self.driver = self.driver_manager.get_driver()
-            else:
-                self.driver = driver
-            self.download_extension.set_driver(self.driver)
+        self.driver = driver
+        self.download_extension.set_driver(self.driver)
 
     # @abstractmethod
     def get_information_extension(self):

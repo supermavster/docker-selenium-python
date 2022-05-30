@@ -7,19 +7,19 @@ import time
 from interface.extension.plugin_manager import PluginManager
 
 
+def sleep_seconds():
+    """Sleep seconds"""
+    min_rand = 0.64
+    max_rand = 1.27
+    time.sleep(random.uniform(min_rand, max_rand))
+
+
 class CaptchaSolver(PluginManager):
     """ CAPTCHA solver for the extension. """
 
     # Variables
     solver_challenge = False
-    current_iteration = 0
-    # Randomization Related
-    MIN_RAND = 0.64
-    MAX_RAND = 1.27
-    LONG_MIN_RAND = 4.78
-    LONG_MAX_RAND = 11.1
     # Settings
-    NUMBER_OF_ITERATIONS = 10
     RECAPTCHA_PAGE_URL = "https://patrickhlauke.github.io/recaptcha"
     # RECAPTCHA_PAGE_URL = "https://www.google.com/recaptcha/api2/demo"
     # Chrome
@@ -38,29 +38,24 @@ class CaptchaSolver(PluginManager):
     }
 
     def __init__(self, path_assets, browser="chrome",
-                 driver_manager=None, driver_action=None, driver=None):
+                 driver_action=None, driver=None):
         self.path_assets = path_assets
         self.browser = browser
-        self.driver_manager = driver_manager
         self.driver_action = driver_action
         self.driver = driver
 
         self._init_variables()
 
-        super().__init__(path_assets, browser, driver_manager, driver)
+        super().__init__(path_assets, browser, driver)
 
     def _init_variables(self):
         self.download_extension = None
         self.path_data = f"{self.path_assets}/{self.path_data}"
 
-    def sleep_seconds(self):
-        """Sleep seconds"""
-        time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
-
     def set_test_url(self):
         """Set the test url"""
         self.driver_action.set_setting_window(self.RECAPTCHA_PAGE_URL)
-        self.sleep_seconds()
+        sleep_seconds()
 
     def resolve(self):
         """Resolve the captcha Google"""
@@ -79,19 +74,19 @@ class CaptchaSolver(PluginManager):
 
     def _start_tries(self):
         counter = 0
-        for i in range(self.NUMBER_OF_ITERATIONS):
+        number_of_iterations = 10
+        for i in range(number_of_iterations):
             if self.solver_challenge:
                 break
 
             if self._check_exist_captcha():
                 self._solve()
-                self.current_iteration = i + 1
                 counter += 1
             else:
                 break
-            print(f"Successful breaks: {counter}")
-        message = f"{counter} - {self.NUMBER_OF_ITERATIONS}"
-        print(f"Total successful breaks: {message}")
+            print(f"Successful breaks: {counter} - {i}")
+
+        print(f"Total successful breaks: {counter}")
 
     def _check_exist_captcha(self):
         return self.driver_action.visible("//iframe[contains(@src,'recaptcha')]") or False
@@ -139,7 +134,7 @@ class CaptchaSolver(PluginManager):
         # Check if the ReCaptcha has no challenge
         exist = self.driver_action.is_exists_by_xpath('//span[@aria-checked="true"]')
         if exist:
-            print(f"[{self.current_iteration}] ReCaptcha has no challenge. Trying again!")
+            print("ReCaptcha has no challenge. Trying again!")
         return not exist
 
     def _get_audio_challenge(self):
