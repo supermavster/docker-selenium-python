@@ -7,7 +7,6 @@ from interface.extension.plugin_manager import PluginManager
 
 class MetaMask(PluginManager):
     """ Metamask extension for the controller. """
-    path_assets = ""
     path_data = "wallets/metamask"
     # Data
     recovery_phrase = ""
@@ -27,7 +26,7 @@ class MetaMask(PluginManager):
     }
 
     def __init__(self, path_assets, browser="chrome",
-                 driver_manager=None, driver_action=None, driver=None):
+                 driver_action=None, driver=None):
         self.path_assets = path_assets
         self.browser = browser
 
@@ -36,7 +35,7 @@ class MetaMask(PluginManager):
 
         self._init_variables()
 
-        super().__init__(path_assets, browser, driver_manager, driver)
+        super().__init__(path_assets, browser, driver)
 
     def _init_variables(self):
         self.fails = 0

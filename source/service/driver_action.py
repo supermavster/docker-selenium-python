@@ -13,6 +13,11 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait as WDW
 
 
+def wait_time(seconds: int = 5) -> None:
+    """ Wait for a certain amount of seconds. """
+    time.sleep(seconds)
+
+
 class DriverAction:
     """ This class is used to perform actions on the webdriver. """
     driver = None
@@ -24,16 +29,12 @@ class DriverAction:
         self.is_chrome = is_chrome
         self.is_firefox = is_firefox
 
-    def wait_time(self, seconds: int = 5) -> None:
-        """ Wait for a certain amount of seconds. """
-        time.sleep(seconds)
-
     def wait(self, seconds: int = 5) -> None:
         """ Wait for a certain amount of seconds. """
         try:
             WDW(self.driver, seconds).until(lambda _: True)
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
 
     def set_setting_window(self, start_url="https://google.com"):
         """ Start the webdriver. """
@@ -53,17 +54,17 @@ class DriverAction:
         """ Try to close the webdriver. """
         try:
             self.driver.quit()
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
 
     def is_exists_by_xpath(self, xpath, show_error=False):
         """ Check if an element exists by xpath. """
         try:
             # WDW(self.driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
             self.driver.find_element(By.XPATH, xpath)
-        except Exception as e:
+        except Exception as execption:
             if show_error:
-                print("error", e)
+                print("error", execption)
             return False
         return True
 
@@ -94,16 +95,16 @@ class DriverAction:
         except TE:
             print("Timeout while waiting for the upload page.")
             return False
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             return False
 
     def quit(self) -> None:
         """Stop the webdriver."""
         try:
             self.driver.quit()
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
 
     def clickable(self, element: str, show_error=False) -> None:
         """Click on an element if it's clickable using Selenium."""
@@ -111,9 +112,9 @@ class DriverAction:
             WDW(self.driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, element))
             ).click()
-        except Exception as e:
+        except Exception as execption:
             if show_error:
-                print("error", e)
+                print("error", execption)
             self.clickable_js(element, show_error)
 
     def clickable_js(self, element: str, show_error=False) -> None:
@@ -121,9 +122,9 @@ class DriverAction:
         try:
             # JavaScript can bypass this.
             self.driver.execute_script("arguments[0].click();", self.visible(element))
-        except Exception as e:
+        except Exception as execption:
             if show_error:
-                print("error", e)
+                print("error", execption)
 
     def visible(self, element: str):
         """ Check if an element is visible using Selenium. """
@@ -131,16 +132,16 @@ class DriverAction:
             return WDW(self.driver, 15).until(
                 EC.visibility_of_element_located((By.XPATH, element))
             )
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             return False
 
     def find_by_tag(self, element: str):
         """ Find an element by tag name. """
         try:
             return self.driver.find_element(By.TAG_NAME, element)
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             return []
 
     def find_all_by_tag(self, element: str):
@@ -149,16 +150,16 @@ class DriverAction:
             return WDW(self.driver, 15).until(
                 lambda _: self.driver.find_elements(By.TAG_NAME, element)
             )
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             return []
 
     def send_keys(self, element: str, keys: str) -> None:
         """ Send keys to an element if it's visible using Selenium. """
         try:
             self.visible(element).send_keys(keys)
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             WDW(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, element))
             ).send_keys(keys)
@@ -213,8 +214,8 @@ class DriverAction:
             return True
         except TE:
             return False
-        except Exception as e:
-            print("error", e)
+        except Exception as execption:
+            print("error", execption)
             return False
 
     def window_handles(self, window_number: int) -> None:

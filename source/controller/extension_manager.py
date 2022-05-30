@@ -11,17 +11,15 @@ class ExtensionManager:
     """ Extension Manager for the controller. """
     path_assets = None
     browser = None
-    driver_manager = None
     driver_action = None
     driver = None
     wallet = None
     captcha = None
     extensions = []
 
-    def __init__(self, path_assets, browser, driver_manager=None, driver_action=None, driver=None):
+    def __init__(self, path_assets, browser, driver_action=None, driver=None):
         self.path_assets = path_assets
         self.browser = browser
-        self.driver_manager = driver_manager
         self.driver_action = driver_action
         self.driver = driver
         self.set_extensions()
@@ -55,7 +53,7 @@ class ExtensionManager:
     def set_captcha(self):
         """ Set the captcha instance """
         self.captcha = CaptchaSolver(self.path_assets, self.browser,
-                                     self.driver_manager, self.driver_action, self.driver)
+                                     self.driver_action, self.driver)
         self.captcha.start()
 
     def get_captcha(self):
@@ -71,7 +69,7 @@ class ExtensionManager:
     def set_wallet(self):
         """ Set the wallet instance """
         self.wallet = MetaMask(self.path_assets, self.browser,
-                               self.driver_manager, self.driver_action, self.driver)
+                               self.driver_action, self.driver)
         self.wallet.start()
 
     def get_waller(self):
