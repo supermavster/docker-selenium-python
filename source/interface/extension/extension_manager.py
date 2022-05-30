@@ -67,4 +67,4 @@ class ExtensionManager(metaclass=Interface):
         """ Download extension """
         request_uri = requests.get(url)
         content = request_uri.content
-        Complement.write_file(path_file, content, "wb")
+        Complement.write_file(path_file, content, 'wb')
