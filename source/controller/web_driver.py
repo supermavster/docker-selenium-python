@@ -111,17 +111,30 @@ class WebDriver:
     def start(self):
         """ Start the driver """
         self.driver_action.set_setting_window()
-        # Normal
-        # self.driver_action.wait_time()
-        # print(self.driver_action.get_title())
 
-        # Metamask
-        self.example_metamask()
-
-        # CAPTCHA
-        # self.example_captcha()
+        extensions = os.getenv('EXTENSIONS_' + self.browser.upper()) or None
+        if extensions is None:
+            # Normal
+            self.driver_action.wait_time()
+            print(self.driver_action.get_title())
+        else:
+            self.example_extensions(extensions)
 
         self.driver_action.close_window()
+
+    def example_extensions(self, extensions):
+        """ Example extensions """
+        extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
+            .replace(', ', ',').replace(' ,', ',').split(',')
+
+        for extension in extensions:
+            match extension:
+                case 'metamask':
+                    # Metamask
+                    self.example_metamask()
+                case 'captcha':
+                    # CAPTCHA
+                    self.example_captcha()
 
     def example_metamask(self):
         """ Example of metamask """

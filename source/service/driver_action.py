@@ -14,11 +14,6 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait as WDW
 
 
-def wait_time(seconds: int = 5) -> None:
-    """ Wait for a certain amount of seconds. """
-    time.sleep(seconds)
-
-
 class DriverAction:
     """ This class is used to perform actions on the webdriver. """
     driver = None
@@ -236,3 +231,7 @@ class DriverAction:
             select.select_by_value(value)
         except Exception as ex:
             print(ex)
+
+    def wait_time(seconds: int = 5) -> None:
+        """ Wait for a certain amount of seconds. """
+        time.sleep(seconds)
