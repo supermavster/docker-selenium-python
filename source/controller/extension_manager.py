@@ -5,6 +5,7 @@ import os
 
 from controller.extension.captchasolver import CaptchaSolver
 from controller.extension.metamask import MetaMask
+from helper.complement import Complement
 
 
 class ExtensionManager:
@@ -34,8 +35,7 @@ class ExtensionManager:
 
         extensions = os.getenv('EXTENSIONS_' + self.browser.upper())
         if extensions is not None:
-            extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
-                .replace(', ', ',').replace(' ,', ',').split(',')
+            extensions = Complement.convertENVArray(extensions)
 
             for extension in extensions:
                 match extension:

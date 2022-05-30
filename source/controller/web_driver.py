@@ -124,8 +124,7 @@ class WebDriver:
 
     def example_extensions(self, extensions):
         """ Example extensions """
-        extensions = extensions.replace('[', '').replace(']', '').replace('"', '') \
-            .replace(', ', ',').replace(' ,', ',').split(',')
+        extensions = Complement.convertENVArray(extensions)
 
         for extension in extensions:
             match extension:

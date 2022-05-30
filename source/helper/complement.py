@@ -50,3 +50,10 @@ class Complement:
         """ Read file. """
         with open(path, 'r', encoding=encoding) as file:
             return file.read()
+
+    @staticmethod
+    def convertENVArray(env_array):
+        return env_array.replace('[', '').replace(']', '')\
+            .replace('"', '')\
+            .replace(', ', ',').replace(' ,', ',')\
+            .split(',')
