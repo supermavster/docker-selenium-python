@@ -1,4 +1,9 @@
+"""
+Driver interface for the robot.
+"""
+import json
 import os
+import uuid
 from abc import abstractmethod
 
 from selenium import webdriver
@@ -7,6 +12,7 @@ from interface.interface import Interface
 
 
 class DriverInterface(metaclass=Interface):
+    """ Driver interface for the robot. """
     driver = None
     path_driver = None
     path_assets = None
@@ -19,11 +25,13 @@ class DriverInterface(metaclass=Interface):
 
     @abstractmethod
     def set_driver(self):
+        """ Set driver for the browser. """
         options_browser = self._get_options()
         self.driver = self._get_manager_driver(options_browser)
 
     @abstractmethod
     def set_driver_extension(self, path_extensions):
+        """ Set driver for the browser. """
         options_browser = self._get_options()
         options_browser = self._get_extension_pre_config(options_browser)
         # options_browser = self._sign_extension(options_browser)
@@ -31,14 +39,14 @@ class DriverInterface(metaclass=Interface):
 
     @abstractmethod
     def _get_extension_pre_config(self, options_browser):
+        """ Set driver for the browser. """
         options_browser.accept_untrusted_certs = True
         options_browser.accept_insecure_certs = True
         return options_browser
 
     @abstractmethod
     def _sign_extension(self, options_browser):
-        import uuid
-        import json
+        """ Sign extension. """
         addon_id = "webextension@metamask.io"
         json_info = json.dumps({addon_id: str(uuid.uuid4())})
         options_browser.set_preference("extensions.webextensions.uuids", json_info)
@@ -46,6 +54,7 @@ class DriverInterface(metaclass=Interface):
 
     @abstractmethod
     def get_driver(self):
+        """ Get driver for the browser. """
         return self.driver
 
     @abstractmethod
@@ -64,7 +73,6 @@ class DriverInterface(metaclass=Interface):
     def _get_driver_local(self, options_browser):
         service = self._get_service()
         # webdriver.Firefox or webdriver.Chrome
-        return None
 
     @abstractmethod
     def _get_driver_docker(self, options_browser):
