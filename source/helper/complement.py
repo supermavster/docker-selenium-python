@@ -54,7 +54,7 @@ class Complement:
     @staticmethod
     def convertENVArray(env_array):
         """ Convert ENV[] to Array """
-        return env_array.replace('[', '').replace(']', '')\
-            .replace('"', '')\
-            .replace(', ', ',').replace(' ,', ',')\
+        return env_array.replace('[', '').replace(']', '') \
+            .replace('"', '') \
+            .replace(', ', ',').replace(' ,', ',') \
             .split(',')
