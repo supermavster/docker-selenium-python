@@ -112,17 +112,22 @@ class WebDriver:
         """ Start the driver """
         self.driver_action.set_setting_window()
 
+        # Example:
+        self.example_extensions()
+
+        self.driver_action.close_window()
+
+    def example_extensions(self):
+        """ Example of use of the extension manager. """
         extensions = os.getenv('EXTENSIONS_' + self.browser.upper()) or None
         if extensions is None:
             # Normal
             self.driver_action.wait_time()
             print(self.driver_action.get_title())
         else:
-            self.example_extensions(extensions)
+            self.example_extensions_basic(extensions)
 
-        self.driver_action.close_window()
-
-    def example_extensions(self, extensions):
+    def example_extensions_basic(self, extensions):
         """ Example extensions """
         extensions = Complement.convertENVArray(extensions)
 
@@ -138,8 +143,7 @@ class WebDriver:
     def example_metamask(self):
         """ Example of metamask """
         keys = os.getenv('METAMASK_AUTH') or ""
-        keys = keys.replace('[', '').replace(']', '').replace('"', '') \
-            .replace(', ', ',').replace(' ,', ',').split(',')
+        keys = Complement.convertENVArray(keys)
         self.extension_manager.wallet.set_passwords(keys[0], keys[1])
         self.extension_manager.wallet.login()
 
