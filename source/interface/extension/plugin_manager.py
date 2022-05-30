@@ -1,5 +1,6 @@
-from abc import abstractmethod
-
+"""
+Plugin Manager
+"""
 from helper.complement import Complement
 from interface.interface import Interface
 from service.extension.download_extension_chrome import DownloadExtensionChrome
@@ -7,6 +8,7 @@ from service.extension.download_extension_firefox import DownloadExtensionFirefo
 
 
 class PluginManager(metaclass=Interface):
+    """ Plugin manager class """
     path_assets = ""
     path_data = ""
     # Chrome
@@ -24,28 +26,33 @@ class PluginManager(metaclass=Interface):
         self.download_extension = None
         self.set_config()
 
-    @abstractmethod
+    # @abstractmethod
     def set_config(self):
+        """ Set config """
         self.set_browser()
         self.set_driver(self.driver_manager, self.driver)
 
-    @abstractmethod
+    # @abstractmethod
     def set_browser(self):
+        """ Set browser """
         if self.browser_is_chrome():
             self.download_extension = DownloadExtensionChrome(self.path_assets)
         elif self.browser_is_firefox():
             self.download_extension = DownloadExtensionFirefox(self.path_assets)
 
-    @abstractmethod
+    # @abstractmethod
     def browser_is_chrome(self):
+        """ Check if browser is chrome """
         return Complement.browser_is_chrome(self.browser)
 
-    @abstractmethod
+    # @abstractmethod
     def browser_is_firefox(self):
+        """ Check if browser is firefox """
         return Complement.browser_is_firefox(self.browser)
 
-    @abstractmethod
+    # @abstractmethod
     def set_driver(self, driver_manager, driver=None):
+        """ Set driver """
         if driver_manager is not None:
             self.driver_manager = driver_manager
             if driver is None:
@@ -54,28 +61,33 @@ class PluginManager(metaclass=Interface):
                 self.driver = driver
             self.download_extension.set_driver(self.driver)
 
-    @abstractmethod
+    # @abstractmethod
     def get_information_extension(self):
+        """ Get information extension """
         url = self.url_extension
         return self.download_extension.exist_extension_by_url(url)
 
-    @abstractmethod
+    # @abstractmethod
     def get_path_extension(self):
+        """ Get path extension """
         check_extension = self.get_information_extension()
         return check_extension["path_file"]
 
-    @abstractmethod
+    # @abstractmethod
     def extension_exist(self):
+        """ Check if extension exist """
         check_extension = self.get_information_extension()
         return check_extension["exist"]
 
-    @abstractmethod
+    # @abstractmethod
     def install(self):
+        """ Install extension """
         if not self.extension_exist():
             self.download_extension.generate_extension(self.url_extension)
 
-    @abstractmethod
+    # @abstractmethod
     def start(self):
+        """ Start extension """
         if self.browser_is_firefox():
             self.url_extension = self.download_extension.get_url_extension(
                 self.data_extension_firefox

@@ -1,9 +1,18 @@
+"""
+Metamask extension for the controller.
+"""
+
 from interface.extension.plugin_manager import PluginManager
 
 
 class MetaMask(PluginManager):
+    """ Metamask extension for the controller. """
     path_assets = ""
     path_data = "wallets/metamask"
+    # Data
+    recovery_phrase = ""
+    password = ""
+
     # Chrome
     url_extension = (
         "https://chrome.google.com/webstore/detail/"
@@ -17,7 +26,8 @@ class MetaMask(PluginManager):
         "user_id": [12436990, 13014139],
     }
 
-    def __init__(self, path_assets, browser="chrome", driver_manager=None, driver_action=None, driver=None):
+    def __init__(self, path_assets, browser="chrome",
+                 driver_manager=None, driver_action=None, driver=None):
         self.path_assets = path_assets
         self.browser = browser
 
@@ -37,10 +47,11 @@ class MetaMask(PluginManager):
         self.path_data = f"{self.path_assets}/{self.path_data}"
 
     # Init Process
-    def set_passwords(self, password: str = None, recovery_phrase: str = None) -> None:
-        question = "What is your MetaMask password?"
+    def set_passwords(self, password: str = None, recovery_phrase: str = None):
+        """Set the password and the recovery phrase."""
+        # question = "What is your MetaMask password?"
         self.password = password
-        question = "What is your MetaMask recovery phrase?"
+        # question = "What is your MetaMask recovery phrase?"
         self.recovery_phrase = recovery_phrase
 
     # Selenium Process
@@ -66,7 +77,7 @@ class MetaMask(PluginManager):
             self.driver_action.clickable('//*[contains(@class, "btn-primary")][position()=1]')
             # Set Private Key
             self._set_private_key()
-        except Exception as e:  # Failed - a web element is not accessible.
+        except (Exception,):  # Failed - a web element is not accessible.
             self.fails += 1  # Increment the counter.
             if self.fails < 2:  # Retry login to the MetaMask.
                 self.login()
@@ -80,7 +91,8 @@ class MetaMask(PluginManager):
             split_recovery_phrase = self.recovery_phrase.split(" ")
             count = len(split_recovery_phrase)
             # Select by length the recovery phrase.
-            self.driver_action.select_by_value('//select[contains(@class, "dropdown__select")]', count)
+            xpath = '//select[contains(@class, "dropdown__select")]'
+            self.driver_action.select_by_value(xpath, count)
             # Put the recovery phrase.
             for i in range(count):
                 # Get the word.
@@ -126,8 +138,10 @@ class MetaMask(PluginManager):
         self.driver_action.driver.execute_script(  # Scroll down.
             'window.scrollTo(0, document.body.scrollHeight);')
         # Click on the "Sign" button - Make a contract link.
-        self.driver_action.clickable('(//div[contains(@class, "signature") and contains(@class, "footer")])'
-                                     '[position()=1]/button[2]')
+        rule_first = 'contains(@class, "signature")'
+        rule_second = 'contains(@class, "footer")'
+        xpath = f'(//div[{rule_first} and {rule_second}])[position()=1]/button[2]'
+        self.driver_action.clickable(xpath)
         if not self.driver_action.wait_popup_close():
             # Sign the contract a second time.
             self.contract()

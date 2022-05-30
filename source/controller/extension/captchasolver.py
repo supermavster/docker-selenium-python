@@ -1,3 +1,6 @@
+"""
+CAPTCHA solver for the extension.
+"""
 import random
 import time
 
@@ -5,7 +8,11 @@ from interface.extension.plugin_manager import PluginManager
 
 
 class CaptchaSolver(PluginManager):
-    SOLVER_CHALLENGE = False
+    """ CAPTCHA solver for the extension. """
+
+    # Variables
+    solver_challenge = False
+    current_iteration = 0
     # Randomization Related
     MIN_RAND = 0.64
     MAX_RAND = 1.27
@@ -30,7 +37,8 @@ class CaptchaSolver(PluginManager):
                           "firefox/addon/youtube-video-quality",
     }
 
-    def __init__(self, path_assets, browser="chrome", driver_manager=None, driver_action=None, driver=None):
+    def __init__(self, path_assets, browser="chrome",
+                 driver_manager=None, driver_action=None, driver=None):
         self.path_assets = path_assets
         self.browser = browser
         self.driver_manager = driver_manager
@@ -46,9 +54,11 @@ class CaptchaSolver(PluginManager):
         self.path_data = f"{self.path_assets}/{self.path_data}"
 
     def sleep_seconds(self):
+        """Sleep seconds"""
         time.sleep(random.uniform(self.MIN_RAND, self.MAX_RAND))
 
     def set_test_url(self):
+        """Set the test url"""
         self.driver_action.set_setting_window(self.RECAPTCHA_PAGE_URL)
         self.sleep_seconds()
 
@@ -62,6 +72,7 @@ class CaptchaSolver(PluginManager):
             return False
         if self.driver_action and self.driver:
             return True
+        return False
 
     def _resolve_captcha(self):
         self._start_tries()
@@ -69,16 +80,16 @@ class CaptchaSolver(PluginManager):
     def _start_tries(self):
         counter = 0
         for i in range(self.NUMBER_OF_ITERATIONS):
-            if self.SOLVER_CHALLENGE:
+            if self.solver_challenge:
                 break
+
+            if self._check_exist_captcha():
+                self._solve()
+                self.current_iteration = i + 1
+                counter += 1
             else:
-                if self._check_exist_captcha():
-                    self._solve()
-                    self.current_iteration = i + 1
-                    counter += 1
-                else:
-                    break
-            print("Successful breaks: {0}".format(counter))
+                break
+            print(f"Successful breaks: {counter}")
         message = f"{counter} - {self.NUMBER_OF_ITERATIONS}"
         print(f"Total successful breaks: {message}")
 
@@ -93,7 +104,7 @@ class CaptchaSolver(PluginManager):
             # Get audio challenge
             check_challenge = self._get_audio_challenge()
             if check_challenge:
-                self.SOLVER_CHALLENGE = check_challenge
+                self.solver_challenge = check_challenge
             # Switch to the ReCaptcha iframe to verify it is solved
             self.driver_action.switch_to_default_content()
 
@@ -151,7 +162,9 @@ class CaptchaSolver(PluginManager):
 
     def _check_audio_button(self):
         # Check if the audio challenge button is present
-        xpath = "//div[contains(@class, 'button-holder') and contains(@class, 'help-button-holder')]"
+        rule_first = "contains(@class, 'button-holder')"
+        rule_second = "contains(@class, 'help-button-holder')"
+        xpath = f"//div[{rule_first} and {rule_second}]"
         # Check Audio Button
         check_exist = self._check_button(xpath)
         if check_exist:
@@ -161,7 +174,9 @@ class CaptchaSolver(PluginManager):
 
     def _check_submit_button(self):
         # Check again button is present
-        xpath = "//*[contains(@class, 'rc-button-default') and contains(@class, 'goog-inline-block')]"
+        rule_first = "contains(@class, 'rc-button-default')"
+        rule_second = "contains(@class, 'goog-inline-block')"
+        xpath = f"//*[{rule_first} and {rule_second}]"
         # Check Audio Button
         check_exist = self._check_button(xpath)
         if check_exist:
