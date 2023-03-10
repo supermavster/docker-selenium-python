@@ -77,7 +77,7 @@ RUN export $(cat /tmp/geckodriver_version) && \
 # Generate App
 COPY ./source/ $APP_HOME/
 COPY .env $APP_HOME/
-RUN [ -f /$APP_HOME/.env ] || cp .env /$APP_HOME/
+RUN [ -f $APP_HOME/.env ] || cp .env $APP_HOME/
 
 RUN pip install -r requirements.txt
 
